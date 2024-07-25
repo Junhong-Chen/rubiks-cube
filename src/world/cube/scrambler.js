@@ -1,3 +1,12 @@
+import { Vector3 } from "three"
+
+const FACES = {
+  SMALL: 'UDLRFB',
+  LARGE: 'UuDdLlRrFfBb'
+}
+
+const modifiers = ["", "'", "2"] // 顺时针、逆时针、180°
+
 export default class Scrambler {
   constructor(world) {
     this.world = world
@@ -11,38 +20,33 @@ export default class Scrambler {
       5: [40, 60, 80],
     }
 
-    this.moves = []
     this.conveted = []
-    this.pring = ''
   }
 
   scramble(scramble) {
-    let count = 0
-    this.moves = (typeof scramble !== 'undefined') ? scramble.split(' ') : []
+    const moves = scramble !== undefined ? scramble.split(' ') : []
+    const { size } = this.world.cube
 
-    if (this.moves.length < 1) {
-      const scrambleLength = this.scrambleLength[this.world.cube.size][this.dificulty]
+    if (moves.length < 1) {
+      const scrambleLength = this.scrambleLength[size][this.dificulty]
 
-      const faces = this.world.cube.size < 4 ? 'UDLRFB' : 'UuDdLlRrFfBb'
-      const modifiers = ["", "'", "2"]
-      const total = (typeof scramble === 'undefined') ? scrambleLength : scramble
+      const faces = size < 4 ? FACES.SMALL : FACES.LARGE
+      const total = scramble === undefined ? scrambleLength : scramble
 
+      let count = 0
       while (count < total) {
-        const move =
-          faces[Math.floor(Math.random() * faces.length)] +
-          modifiers[Math.floor(Math.random() * 3)]
+        const move = faces[Math.floor(Math.random() * faces.length)] + modifiers[Math.floor(Math.random() * 3)]
 
-        if (count > 0 && move.charAt(0) == this.moves[count - 1].charAt(0)) continue
-        if (count > 1 && move.charAt(0) == this.moves[count - 2].charAt(0)) continue
+        if (count > 0 && move[0] === moves[count - 1][0]) continue
+        if (count > 1 && move[0] === moves[count - 2][0]) continue
 
-        this.moves.push(move)
+        moves.push(move)
         count++
       }
     }
 
-    this.callback = () => { }
-    this.convert()
-    this.print = this.moves.join(' ')
+    this.callback = () => {}
+    this.convert(moves)
 
     return this
   }
@@ -50,28 +54,29 @@ export default class Scrambler {
   convert(moves) {
     this.converted = []
 
-    this.moves.forEach(move => {
+    moves.forEach(move => {
       const convertedMove = this.convertMove(move)
-      const modifier = move.charAt(1)
+      const [_, modifier] = move
 
       this.converted.push(convertedMove)
-      if (modifier == "2") this.converted.push(convertedMove)
+      if (modifier === modifiers[2]) this.converted.push(convertedMove)
     })
   }
 
   convertMove(move) {
-    const face = move.charAt(0)
-    const modifier = move.charAt(1)
+    const [face, modifier] = move
+    const axes = { D: 'y', U: 'y', L: 'x', R: 'x', F: 'z', B: 'z' }
+    const rows = { D: -1, U: 1, L: -1, R: 1, F: 1, B: -1 }
 
-    const axis = { D: 'y', U: 'y', L: 'x', R: 'x', F: 'z', B: 'z' }[face.toUpperCase()]
-    let row = { D: -1, U: 1, L: -1, R: 1, F: 1, B: -1 }[face.toUpperCase()]
+    const axis = axes[face.toUpperCase()]
+    let row = rows[face.toUpperCase()]
 
     if (this.world.cube.size > 3 && face !== face.toLowerCase()) row = row * 2
 
-    const position = new THREE.Vector3()
-    position[{ D: 'y', U: 'y', L: 'x', R: 'x', F: 'z', B: 'z' }[face.toUpperCase()]] = row
+    const position = new Vector3()
+    position[axes[face.toUpperCase()]] = row
 
-    const angle = (Math.PI / 2) * - row * ((modifier == "'") ? - 1 : 1)
+    const angle = (Math.PI / 2) * - row * ((modifier === modifiers[1]) ? - 1 : 1)
 
     return { position, axis, angle, name: move }
   }

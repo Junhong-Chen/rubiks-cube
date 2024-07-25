@@ -1,13 +1,24 @@
 html, body {
   padding: 0;
   margin: 0;
+  font-size: 16px;
+  color: white;
+  user-select: none;
+}
+
+h1, p {
+  margin: 0;
+}
+
+i {
+  font-style: normal;
 }
 
 #loading-bar {
   position: absolute;
   top: calc(50% - 1px);
   width: 100%;
-  height: 2px;
+  height: 0.125em;
   background-color: white;
   transform: scale(0);
   transform-origin: center left;
@@ -18,4 +29,54 @@ html, body {
 #loading-bar.ended {
   transform-origin: center right;
   transition: transform 1.5s ease-in-out;
+}
+
+/* #texts, #buttons {
+} */
+
+.text, .btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+}
+
+.text-title {
+  top: 10%;
+  width: 100%;
+  font-size: 5.6em;
+}
+.text-title span {
+  display: block;
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.text-note {
+  top: 90%;
+  width: 100%;
+  font-size: 1.8em;
+}
+
+.text.twinkle {
+  animation: 2s ease-in-out infinite twinkle;
+}
+
+.text.fade-out {
+  opacity: 0 !important;
+  transition: opacity 0.5s;
+  will-change: opacity;
 }

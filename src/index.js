@@ -3,8 +3,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js"
 import Sizes from "./utils/sizes"
 import Timer from "./utils/timer"
 import World from "./world/world"
-import Loader from "./utils/loader"
 import Debugger from "./utils/debugger"
+
+const $ = document.querySelector.bind(document)
 
 class App {
   constructor() {
@@ -15,6 +16,29 @@ class App {
     this.scene = new Scene()
     this.sizes = new Sizes()
     this.timer = new Timer()
+
+    this.dom = {
+      ui: $('#ui'),
+      cube: $('#cube'),
+      stats: $('#stats'),
+      prefs: $('#prefs'),
+      theme: $('#theme'),
+      texts: {
+        title: document.querySelector('.text-title'),
+        note: document.querySelector('.text-note'),
+        timer: document.querySelector('.text-timer'),
+        complete: document.querySelector('.text-complete'),
+        best: document.querySelector('.text-best-time'),
+        theme: document.querySelector('.text-theme'),
+      },
+      buttons: {
+        stats: $('.btn-stats'),
+        prefs: $('.btn-prefs'),
+        theme: $('.btn-theme'),
+        back: $('.btn-back'),
+        reset: $('.btn-reset'),
+      }
+    }
 
     const { width, height, pixelRatio } = this.sizes
 
@@ -35,11 +59,13 @@ class App {
     this.renderer.setPixelRatio(pixelRatio)
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = PCFSoftShadowMap
-    document.body.appendChild(this.renderer.domElement)
+    this.dom.cube.appendChild(this.renderer.domElement)
 
     this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement)
     this.orbitControls.enableZoom = false
     this.orbitControls.enableDamping = true
+    this.orbitControls.enablePan = false
+    this.orbitControls.enabled = false
     this.orbitControls.dampingFactor = 0.15
     if (this.debugger.gui) this.debugger.gui.add(this.orbitControls, 'enabled')
 

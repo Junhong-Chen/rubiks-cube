@@ -56,9 +56,7 @@ const animationEngine = (() => {
 export class Animation {
 
   constructor(start) {
-
     if (start === true) this.start()
-
   }
 
   start() {

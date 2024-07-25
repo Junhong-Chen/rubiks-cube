@@ -1,12 +1,12 @@
 import { AmbientLight, DirectionalLight, PointLight, DirectionalLightHelper, PointLightHelper, SpotLight } from "three"
 import { Tween, Easing } from "../utils/tween.js"
 
-const SwitchType = {
-  TURNON: 1,
-  TURNOFF: 0
-}
-
 export default class Light {
+  static SWITCH = {
+    TURNON: true,
+    TURNOFF: false
+  }
+
   #scene
 
   constructor(world) {
@@ -14,12 +14,10 @@ export default class Light {
   
     this.aLight = this.addAmbientLight()
     this.pLight = this.addPointLight()
-
-    this.switch(SwitchType.TURNON)
   }
 
   addAmbientLight() {
-    const aLight = new AmbientLight('white', 0)
+    const aLight = new AmbientLight('white', 4)
     this.#scene.add(aLight)
     return aLight
   }
@@ -47,25 +45,30 @@ export default class Light {
   }
 
   switch(type) {
-    new Tween({
-      easing: Easing.Power.InOut(),
-      duration: 500,
-      onUpdate: tween => {
-        switch(type) {
-          case SwitchType.TURNON:
-            this.aLight.intensity = tween.value * 3
+    const easing = Easing.Power.InOut()
+    const duration = 500
+    
+    switch(type) {
+      case Light.SWITCH.TURNON:
+        new Tween({
+          easing,
+          duration,
+          onUpdate: tween => {
             this.pLight.intensity = tween.value * 32
             this.pLight.angle = tween.value * Math.PI / 8
-            break
-          case SwitchType.TURNOFF:
-            this.aLight.intensity = (1 - tween.value) * 3
+          }
+        })
+        break
+      case Light.SWITCH.TURNOFF:
+        new Tween({
+          easing,
+          duration,
+          onUpdate: tween => {
             this.pLight.intensity = (1 - tween.value ) * 32
             this.pLight.angle = (1 - tween.value ) * Math.PI / 8
-            break
-        }
-      },
-      onComplete: () => {
-      },
-    })
+          }
+        })
+        break
+    }
   }
 }

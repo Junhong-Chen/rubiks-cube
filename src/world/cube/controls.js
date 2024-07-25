@@ -2,7 +2,7 @@ import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial
 import { Tween, Easing } from "../../utils/tween.js"
 import Draggable from "./draggable.js"
 
-const State = {
+const STATE = {
   STILL: 0,
   PREPARING: 1,
   ROTATING: 2,
@@ -54,7 +54,7 @@ export default class Controls {
     this.momentum = []
 
     this.scramble = null
-    this.state = State.STILL
+    this.state = STATE.STILL
     this.enabled = false
 
     this.initDraggable()
@@ -75,9 +75,9 @@ export default class Controls {
 
     this.draggable.onDragStart = position => {
       if (this.scramble !== null) return
-      if (this.state === State.PREPARING || this.state === State.ROTATING) return
+      if (this.state === STATE.PREPARING || this.state === STATE.ROTATING) return
 
-      this.gettingDrag = this.state === State.ANIMATING
+      this.gettingDrag = this.state === STATE.ANIMATING
 
       const edgeIntersect = this.getIntersect(position.current, this.edges, false)
 
@@ -89,7 +89,7 @@ export default class Controls {
         this.dragNormal = edgeIntersect.face.normal.round()
         const worldDragNormal = this.dragNormal.clone().applyMatrix4(this.edges.matrixWorld)
         this.flipType = RotateType.LAYER
-        this.world.orbitControls.enabled = false
+        // this.world.orbitControls.enabled = false
 
         this.helper.rotation.set(0, 0, 0)
         this.helper.position.set(0, 0, 0)
@@ -110,12 +110,12 @@ export default class Controls {
 
       this.dragCurrent = this.helper.worldToLocal(planeIntersect.point)
       this.dragTotal = new Vector3()
-      this.state = (this.state === State.STILL) ? State.PREPARING : this.state
+      this.state = (this.state === STATE.STILL) ? STATE.PREPARING : this.state
     }
 
     this.draggable.onDragMove = position => {
       if (this.scramble !== null) return
-      if (this.state === State.STILL || (this.state === State.ANIMATING && this.gettingDrag === false)) return
+      if (this.state === STATE.STILL || (this.state === STATE.ANIMATING && this.gettingDrag === false)) return
 
       const planeIntersect = this.getIntersect(position.current, this.helper, false)
       if (planeIntersect === false) return
@@ -127,7 +127,7 @@ export default class Controls {
       this.dragCurrent = point
       this.addMomentumPoint(this.dragDelta)
 
-      if (this.state === State.PREPARING && this.dragTotal.length() > 0.05) {
+      if (this.state === STATE.PREPARING && this.dragTotal.length() > 0.05) {
         this.dragDirection = this.getMainAxis(this.dragTotal)
 
         // 计算旋转轴
@@ -151,31 +151,31 @@ export default class Controls {
         }
 
         this.flipAngle = 0
-        this.state = State.ROTATING
-      } else if (this.state === State.ROTATING) {
+        this.state = STATE.ROTATING
+      } else if (this.state === STATE.ROTATING) {
         const rotation = this.dragDelta[this.dragDirection]
 
         if (this.flipType === RotateType.LAYER) {
           this.group.rotateOnAxis(this.flipAxis, rotation)
           this.flipAngle += rotation
         } else {
-          // this.edges.rotateOnWorldAxis(this.flipAxis, rotation)
-          // this.world.cube.object.rotation.copy(this.edges.rotation)
-          // this.flipAngle += rotation
+          this.edges.rotateOnWorldAxis(this.flipAxis, rotation)
+          this.world.cube.object.rotation.copy(this.edges.rotation)
+          this.flipAngle += rotation
         }
       }
     }
 
     this.draggable.onDragEnd = position => {
-      this.world.orbitControls.enabled = true
+      // this.world.orbitControls.enabled = true
       if (this.scramble !== null) return
-      if (this.state !== State.ROTATING) {
+      if (this.state !== STATE.ROTATING) {
         this.gettingDrag = false
-        this.state = State.STILL
+        this.state = STATE.STILL
         return
       }
 
-      this.state = State.ANIMATING
+      this.state = STATE.ANIMATING
 
       const momentum = this.getMomentum()[this.dragDirection]
       const flip = (Math.abs(momentum) > 0.05 && Math.abs(this.flipAngle) < Math.PI / 2)
@@ -191,18 +191,18 @@ export default class Controls {
 
           this.world.storage.saveGame()
 
-          this.state = this.gettingDrag ? State.PREPARING : State.STILL
+          this.state = this.gettingDrag ? STATE.PREPARING : STATE.STILL
           this.gettingDrag = false
 
           this.checkIsSolved()
         })
       } else {
-        this.state = this.gettingDrag ? State.PREPARING : State.STILL
+        this.state = this.gettingDrag ? STATE.PREPARING : STATE.STILL
 
-        // this.rotateCube(delta, () => {
-        //   this.state = this.gettingDrag ? PREPARING : STILL
-        //   this.gettingDrag = false
-        // })
+        this.rotateCube(delta, () => {
+          this.state = this.gettingDrag ? STATE.PREPARING : STATE.STILL
+          this.gettingDrag = false
+        })
       }
     }
   }
@@ -215,22 +215,20 @@ export default class Controls {
     const bounce = (config == 2) ? this.bounceCube() : (() => { })
 
     new Tween({
-      easing: easing,
-      duration: duration,
+      easing,
+      duration,
       onUpdate: tween => {
-
         let deltaAngle = tween.delta * rotation
         this.group.rotateOnAxis(this.flipAxis, deltaAngle)
         bounce(tween.value, deltaAngle, rotation)
-
       },
       onComplete: () => {
         if (!scramble) this.onMove()
 
         const layer = this.flipLayer.slice(0)
 
-        this.world.cube.object.rotation.fromArray(this.world.cube.object.rotation.toArray())
-        this.group.rotation.fromArray(this.group.rotation.toArray())
+        this.world.cube.object.rotation.fromArray(this.snapRotation(this.world.cube.object.rotation.toArray()))
+        this.group.rotation.fromArray(this.snapRotation(this.group.rotation.toArray()))
         this.deselectLayer(this.flipLayer)
 
         callback(layer)
@@ -267,7 +265,7 @@ export default class Controls {
         this.world.cube.object.rotation.copy(this.edges.rotation)
       },
       onComplete: () => {
-        this.edges.rotation.fromArray(this.edges.rotation.toArray())
+        this.edges.rotation.fromArray(this.snapRotation(this.edges.rotation.toArray()))
         this.world.cube.object.rotation.copy(this.edges.rotation)
         callback()
       },
@@ -324,13 +322,13 @@ export default class Controls {
   }
 
   scrambleCube() {
-    if (this.scramble == null) {
+    if (this.scramble === null) {
       this.scramble = this.world.scrambler
       this.scramble.callback = (typeof callback !== 'function') ? () => { } : callback
     }
 
     const converted = this.scramble.converted
-    const move = converted[0]
+    const move = converted.shift()
     const layer = this.getLayer(move.position)
 
     this.flipAxis = new Vector3()
@@ -338,7 +336,6 @@ export default class Controls {
 
     this.selectLayer(layer)
     this.rotateLayer(move.angle, true, () => {
-      converted.shift()
 
       if (converted.length > 0) {
         this.scrambleCube()
@@ -389,9 +386,14 @@ export default class Controls {
     return momentum
   }
 
+  // 将角度圆整到最接近的 90° 的倍数
   roundAngle(angle) {
     const round = Math.PI / 2
     return Math.sign(angle) * Math.round(Math.abs(angle) / round) * round
+  }
+
+  snapRotation(rotationArray) {
+    return rotationArray.map(value => Number.isFinite(value) ? this.roundAngle(value) : value)
   }
 
   // 检查魔方是否还原
