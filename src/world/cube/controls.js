@@ -1,6 +1,6 @@
-import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial, PlaneGeometry, BoxGeometry, DoubleSide } from "three"
+import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial, PlaneGeometry, BoxGeometry, DoubleSide, Quaternion, ArrowHelper, AxesHelper } from "three"
 import { Tween, Easing } from "../../utils/tween.js"
-import Draggable from "./draggable.js"
+import Draggable from "../../utils/draggable.js"
 
 const STATE = {
   STILL: 0,
@@ -14,8 +14,43 @@ const RotateType = {
   CUBE: 'cube'
 }
 
+class ControlsPlane extends Mesh {
+  constructor() {
+    super(
+      new PlaneGeometry(1024, 1024, 2, 2),
+      new MeshBasicMaterial({ visible: true, wireframe: true, side: DoubleSide, transparent: false, opacity: 0.1, toneMapped: false })
+    )
+    this.type = 'ControlsPlane'
+  }
+
+}
+
+class ControlsCube extends Mesh {
+  constructor() {
+    super(
+      new BoxGeometry(1, 1, 1),
+      new MeshBasicMaterial({ visible: true, wireframe: true, side: DoubleSide, transparent: false, opacity: 0.1, toneMapped: false })
+    )
+    this.type = 'ControlsCube'
+  }
+}
+
+const _tempQuaternion = new Quaternion()
+const _quaternionStart = new Quaternion()
+
 export default class Controls {
+  static TYPE = {
+    FREE: 'free',
+    FIXED: 'fixed'
+  }
+
   constructor(world) {
+    // this.axisHelper = AxisHelper()
+    // world.scene.add(this.axisHelper)
+
+    // test
+    this.axes = new AxesHelper()
+    world.scene.add(this.axes)
 
     this.world = world
 
@@ -26,27 +61,18 @@ export default class Controls {
 
     this.raycaster = new Raycaster()
 
-    const helperMaterial = new MeshBasicMaterial({ depthWrite: false, transparent: true, opacity: 0, color: 0x00ffff, side: DoubleSide })
-
-    this.group = new Object3D()
-    this.group.name = 'controls'
+    this.group = new Object3D() // 旋转时存放 layer 中的 piece
+    this.group.name = 'templateLayer'
     this.world.cube.object.add(this.group)
 
-    this.helper = new Mesh(
-      new PlaneGeometry(64, 64),
-      helperMaterial.clone()
-    )
-    this.helper.name = 'helper'
+    this.planeHelper = new ControlsPlane()
 
-    this.helper.rotation.set(0, Math.PI / 4, 0)
-    this.world.scene.add(this.helper)
+    this.planeHelper.rotation.set(0, Math.PI / 4, 0)
+    this.world.scene.add(this.planeHelper)
 
-    this.edges = new Mesh(
-      new BoxGeometry(1, 1, 1),
-      helperMaterial.clone(),
-    )
+    this.cubeHelper = new ControlsCube()
 
-    this.world.scene.add(this.edges)
+    this.world.scene.add(this.cubeHelper)
 
     this.onSolved = () => { }
     this.onMove = () => { }
@@ -57,7 +83,16 @@ export default class Controls {
     this.state = STATE.STILL
     this.enabled = false
 
+    // FREE 类型旋转参数
+    this.acceleration = new Vector3() // 加速度
+    this.spped = 0.2 // 速度
+    this.damping = 0.15 // 阻尼
+
+    this.update = this.update.bind(this)
+    this.setType(Controls.TYPE.FREE)
+
     this.initDraggable()
+
   }
 
   enable() {
@@ -70,82 +105,96 @@ export default class Controls {
     this.enabled = false
   }
 
+  setType(type) {
+    this.type = type
+    if (this.type === Controls.TYPE.FREE) {
+      this.world.addUpdateFn(this.update)
+    } else {
+      this.world.removeUpdateFn(this.update)
+    }
+  }
+
   initDraggable() {
     this.draggable = new Draggable(document.body)
 
+    // 开始
     this.draggable.onDragStart = position => {
       if (this.scramble !== null) return
       if (this.state === STATE.PREPARING || this.state === STATE.ROTATING) return
 
       this.gettingDrag = this.state === STATE.ANIMATING
 
-      const edgeIntersect = this.getIntersect(position.current, this.edges, false)
+      const boxIntersect = this.getIntersect(position.current, this.cubeHelper, false)
 
-      if (edgeIntersect !== false) {
+      if (boxIntersect !== false) {
         this.dragIntersect = this.getIntersect(position.current, this.world.cube.cubes, true)
       }
 
-      if (edgeIntersect !== false && this.dragIntersect !== false) {
-        this.dragNormal = edgeIntersect.face.normal.round()
-        const worldDragNormal = this.dragNormal.clone().applyMatrix4(this.edges.matrixWorld)
+      if (boxIntersect !== false && this.dragIntersect !== false) {
         this.flipType = RotateType.LAYER
-        // this.world.orbitControls.enabled = false
+        this.dragNormal = boxIntersect.face.normal.round()
+        const worldDragNormal = this.dragNormal.clone().applyMatrix4(this.cubeHelper.matrixWorld)
 
-        this.helper.rotation.set(0, 0, 0)
-        this.helper.position.set(0, 0, 0)
-        this.helper.lookAt(worldDragNormal)
-        this.helper.translateZ(0.5)
-        this.helper.updateMatrixWorld()
+        this.planeHelper.lookAt(worldDragNormal)
+        this.planeHelper.updateMatrixWorld()
       } else { // 点击空白处
-        this.dragNormal = new Vector3(0, 0, 1)
         this.flipType = RotateType.CUBE
 
-        this.helper.position.set(0, 0, 0)
-        this.helper.rotation.set(0, Math.PI / 4, 0)
-        this.helper.updateMatrixWorld()
+        _quaternionStart.copy(this.cubeHelper.quaternion)
+
+        this.dragNormal = new Vector3(0, 0, 1)
+
+        this.planeHelper.lookAt(new Vector3().copy(this.world.camera.position).normalize())
+        this.planeHelper.updateMatrixWorld()
       }
 
-      let planeIntersect = this.getIntersect(position.current, this.helper, false)
+      let planeIntersect = this.getIntersect(position.current, this.planeHelper, false)
       if (planeIntersect === false) return
 
-      this.dragCurrent = this.helper.worldToLocal(planeIntersect.point)
-      this.dragTotal = new Vector3()
+      this.dragCurrent = this.planeHelper.worldToLocal(planeIntersect.point)
+      this.dragDistance = new Vector3()
       this.state = (this.state === STATE.STILL) ? STATE.PREPARING : this.state
     }
 
+    // 移动
     this.draggable.onDragMove = position => {
       if (this.scramble !== null) return
       if (this.state === STATE.STILL || (this.state === STATE.ANIMATING && this.gettingDrag === false)) return
 
-      const planeIntersect = this.getIntersect(position.current, this.helper, false)
+      const planeIntersect = this.getIntersect(position.current, this.planeHelper, false)
       if (planeIntersect === false) return
 
-      const point = this.helper.worldToLocal(planeIntersect.point.clone())
+      const point = this.planeHelper.worldToLocal(planeIntersect.point.clone())
 
-      this.dragDelta = point.clone().sub(this.dragCurrent).setZ(0)
-      this.dragTotal.add(this.dragDelta)
+      const dragDelta = point.clone().sub(this.dragCurrent).setZ(0)
+      this.dragDistance.add(dragDelta)
       this.dragCurrent = point
-      this.addMomentumPoint(this.dragDelta)
+      this.addMomentumPoint(dragDelta)
 
-      if (this.state === STATE.PREPARING && this.dragTotal.length() > 0.05) {
-        this.dragDirection = this.getMainAxis(this.dragTotal)
+      if (this.state === STATE.PREPARING && this.dragDistance.length() > 0.02) {
+        this.dragDirection = this.getMainAxis(this.dragDistance)
 
         // 计算旋转轴
         if (this.flipType === RotateType.LAYER) {
           const direction = new Vector3()
           direction[this.dragDirection] = 1
 
-          const worldDirection = this.helper.localToWorld(direction).sub(this.helper.position)
-          const objectDirection = this.edges.worldToLocal(worldDirection).round()
+          const worldDirection = this.planeHelper.localToWorld(direction).sub(this.planeHelper.position)
+          const objectDirection = this.cubeHelper.worldToLocal(worldDirection)
+          const _axis = this.getMainAxis(objectDirection)
+          const calcDirection = new Vector3()
+          calcDirection[_axis] = objectDirection[_axis]
+          calcDirection.round()
 
-          this.flipAxis = objectDirection.cross(this.dragNormal).negate()
+          this.flipAxis = calcDirection.cross(this.dragNormal).negate()
 
-          this.selectLayer(this.getLayer())
+          const layer = this.getLayer()
+          this.selectLayer(layer) // 将 layer 中选择的 pices 从 cube 移动到 group 中，方便对 layer 旋转
         } else {
-          const axis = (this.dragDirection != 'x')
-            ? ((this.dragDirection == 'y' && position.current.x > this.world.sizes.width / 2) ? 'z' : 'x')
-            : 'y'
-
+          const axis = (this.dragDirection === 'x')
+            ? 'y'
+            : position.current.x > 0 ? 'z' : 'x'
+  
           this.flipAxis = new Vector3()
           this.flipAxis[axis] = axis === 'x' ? - 1 : 1
         }
@@ -153,21 +202,26 @@ export default class Controls {
         this.flipAngle = 0
         this.state = STATE.ROTATING
       } else if (this.state === STATE.ROTATING) {
-        const rotation = this.dragDelta[this.dragDirection]
+        const rotation = dragDelta[this.dragDirection]
 
         if (this.flipType === RotateType.LAYER) {
           this.group.rotateOnAxis(this.flipAxis, rotation)
           this.flipAngle += rotation
         } else {
-          this.edges.rotateOnWorldAxis(this.flipAxis, rotation)
-          this.world.cube.object.rotation.copy(this.edges.rotation)
-          this.flipAngle += rotation
+          if (this.type === Controls.TYPE.FREE) {
+            this.acceleration.x -= dragDelta.x
+            this.acceleration.y -= dragDelta.y
+          } else {
+            this.cubeHelper.rotateOnWorldAxis(this.flipAxis, rotation)
+            this.world.cube.object.rotation.copy(this.cubeHelper.rotation)
+            this.flipAngle += rotation
+          }
         }
       }
     }
 
+    // 结束
     this.draggable.onDragEnd = position => {
-      // this.world.orbitControls.enabled = true
       if (this.scramble !== null) return
       if (this.state !== STATE.ROTATING) {
         this.gettingDrag = false
@@ -207,6 +261,17 @@ export default class Controls {
     }
   }
 
+  // retainMax(vector) {
+  //   const components = ['x', 'y', 'z']
+  //   const max = components.reduce((max, comp) => 
+  //     Math.abs(vector[comp]) > Math.abs(vector[max]) ? comp : max, components[0])
+
+  //   const result = new Vector3()
+  //   result[max] = vector[max]
+
+  //   return result.round()
+  // }
+
   rotateLayer(rotation, scramble, callback) {
     const config = scramble ? 0 : this.flipConfig
 
@@ -227,7 +292,7 @@ export default class Controls {
 
         const layer = this.flipLayer.slice(0)
 
-        this.world.cube.object.rotation.fromArray(this.snapRotation(this.world.cube.object.rotation.toArray()))
+        // this.world.cube.object.rotation.fromArray(this.snapRotation(this.world.cube.object.rotation.toArray())) // 矫正 cube 转向
         this.group.rotation.fromArray(this.snapRotation(this.group.rotation.toArray()))
         this.deselectLayer(this.flipLayer)
 
@@ -253,23 +318,27 @@ export default class Controls {
   }
 
   rotateCube(rotation, callback) {
-    const config = this.flipConfig
-    const easing = [Easing.Power.Out(4), Easing.Sine.Out(), Easing.Back.Out(2)][config]
-    const duration = [100, 150, 350][config]
 
-    new Tween({
-      easing: easing,
-      duration: duration,
-      onUpdate: tween => {
-        this.edges.rotateOnWorldAxis(this.flipAxis, tween.delta * rotation)
-        this.world.cube.object.rotation.copy(this.edges.rotation)
-      },
-      onComplete: () => {
-        this.edges.rotation.fromArray(this.snapRotation(this.edges.rotation.toArray()))
-        this.world.cube.object.rotation.copy(this.edges.rotation)
-        callback()
-      },
-    })
+    if (this.type === Controls.TYPE.FREE) {
+    } else if (this.type === Controls.TYPE.FIXED) {
+      const config = this.flipConfig
+      const easing = [Easing.Power.Out(4), Easing.Sine.Out(), Easing.Back.Out(2)][config]
+      const duration = [100, 150, 350][config]
+
+      new Tween({
+        easing: easing,
+        duration: duration,
+        onUpdate: tween => {
+          this.cubeHelper.rotateOnWorldAxis(this.flipAxis, tween.delta * rotation)
+          this.world.cube.object.rotation.copy(this.cubeHelper.rotation)
+        },
+        onComplete: () => {
+          this.cubeHelper.rotation.fromArray(this.snapRotation(this.cubeHelper.rotation.toArray()))
+          this.world.cube.object.rotation.copy(this.cubeHelper.rotation)
+          callback()
+        },
+      })
+    }
   }
 
   selectLayer(layer) {
@@ -315,7 +384,7 @@ export default class Controls {
     this.world.cube.pieces.forEach(piece => {
       const piecePosition = piece.position.clone().multiplyScalar(scalar).round()
 
-      if (piecePosition[axis] == position[axis]) layer.push(piece.name)
+      if (piecePosition[axis] === position[axis]) layer.push(piece.name)
     })
 
     return layer
@@ -348,7 +417,7 @@ export default class Controls {
 
   getIntersect(position, object, multiple) {
     this.raycaster.setFromCamera(
-      this.draggable.convertPosition(position.clone()),
+      position.clone(),
       this.world.camera
     )
 
@@ -367,8 +436,9 @@ export default class Controls {
 
   addMomentumPoint(delta) {
     const time = Date.now()
+    const stayTime = 200
 
-    this.momentum = this.momentum.filter(moment => time - moment.time < 500)
+    this.momentum = this.momentum.filter(moment => time - moment.time < stayTime)
 
     if (delta !== false) this.momentum.push({ delta, time })
   }
@@ -421,5 +491,25 @@ export default class Controls {
     })
 
     if (solved) this.onSolved()
+  }
+
+  update() {
+    if (Math.abs(this.acceleration.x) > 1e-6 || Math.abs(this.acceleration.y) > 1e-6) {
+      const eye = new Vector3(1, 0, 1).normalize()
+      const rotationAxis = new Vector3().copy(this.acceleration).cross(eye).normalize()
+      const rotationAngle = this.acceleration.length() * this.spped
+
+      // this.axisHelper.setDirection(rotationAxis)
+
+      _tempQuaternion.setFromAxisAngle(rotationAxis, rotationAngle)
+      this.cubeHelper.applyQuaternion(_tempQuaternion)
+
+      this.world.cube.object.quaternion.copy(this.cubeHelper.quaternion)
+
+      this.axes.quaternion.copy(this.cubeHelper.quaternion)
+
+      this.acceleration.x *= (1 - this.damping)
+      this.acceleration.y *= (1 - this.damping)
+    }
   }
 }

@@ -1,11 +1,12 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, MathUtils, PCFSoftShadowMap, AxesHelper } from "three"
-import { OrbitControls } from "three/addons/controls/OrbitControls.js"
+import { Scene, PerspectiveCamera, WebGLRenderer, MathUtils, PCFSoftShadowMap } from "three"
 import Sizes from "./utils/sizes"
 import Timer from "./utils/timer"
 import World from "./world/world"
 import Debugger from "./utils/debugger"
 
 const $ = document.querySelector.bind(document)
+
+const stage = { width: 2, height: 3, aspect: 2 / 3 }
 
 class App {
   constructor() {
@@ -44,13 +45,16 @@ class App {
 
     this.camera = new PerspectiveCamera(45, width / height, 0.1, 1000)
 
-    const stage = { width: 2, height: 3, aspect: 2 / 3 }
     const fovRad = this.camera.fov * MathUtils.DEG2RAD
-    let distance = ( stage.aspect < this.camera.aspect )
-      ? ( stage.height / 2 ) / Math.tan( fovRad / 2 )
-      : ( stage.width / this.camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) )
+    let distance = (stage.aspect < this.camera.aspect)
+      ? (stage.height / 2) / Math.tan(fovRad / 2)
+      : (stage.width / this.camera.aspect) / (2 * Math.tan(fovRad / 2))
     distance *= 0.5
     this.camera.position.set(distance, distance, distance)
+    this.camera.lookAt(this.scene.position)
+
+    const docFontSize = stage.aspect < width / height ? height / 100 * stage.aspect : width / 100
+    document.documentElement.style.fontSize = docFontSize + 'px'
 
     this.renderer = new WebGLRenderer({
       antialias: true
@@ -60,14 +64,14 @@ class App {
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = PCFSoftShadowMap
     this.dom.cube.appendChild(this.renderer.domElement)
+    this.dom.canvas = this.renderer.domElement
 
-    this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.orbitControls.enableZoom = false
-    this.orbitControls.enableDamping = true
-    this.orbitControls.enablePan = false
-    this.orbitControls.enabled = false
-    this.orbitControls.dampingFactor = 0.15
-    if (this.debugger.gui) this.debugger.gui.add(this.orbitControls, 'enabled')
+    // this.controls = new TrackballControls(this.camera, this.renderer.domElement)
+    // this.controls.noZoom = true
+    // this.controls.noPan = true
+    // this.controls.dynamicDampingFactor = 0.15
+    // this.controls.rotateSpeed = 1.5
+    // this.controls.enabled = false
 
     this.sizes.on('resize', this.resize)
 
@@ -79,7 +83,7 @@ class App {
   }
 
   update = ({ deltaTime }) => {
-    this.orbitControls.update()
+    // this.controls.update()
     this.renderer.render(this.scene, this.camera)
 
     this.world.update(deltaTime)
@@ -91,6 +95,9 @@ class App {
     this.renderer.setPixelRatio(pixelRatio)
     this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
+
+    const docFontSize = stage.aspect < width / height ? height / 100 * stage.aspect : width / 100
+    document.documentElement.style.fontSize = docFontSize + 'px'
   }
 
   destroy = (e) => {
@@ -100,7 +107,7 @@ class App {
     this.debugger.destroy()
     this.sizes.destroy()
     this.timer.destroy()
-    this.orbitControls.dispose()
+    // this.controls.dispose()
     this.renderer.dispose()
     this.world.destroy()
     window.removeEventListener('beforeunload', this.destroy, false)

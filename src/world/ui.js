@@ -9,7 +9,7 @@ export default class UIController {
     this.tweens = {}
     this.durations = {}
     this.data = {
-      cubeY: -0.2,
+      cubeY: 0,
       cameraZoom: 0.85,
     }
 
@@ -19,7 +19,7 @@ export default class UIController {
 
   init() {
 
-    this.world.controller.disable()
+    this.world.controls.disable()
 
     this.world.cube.object.position.y = this.data.cubeY
     this.world.cube.animator.position.y = 4
@@ -123,7 +123,6 @@ export default class UIController {
   }
 
   float() {
-
     try { this.tweens.float.stop() } catch (e) { }
 
     this.tweens.float = new Tween({
@@ -136,10 +135,21 @@ export default class UIController {
         this.world.cube.holder.rotation.z = - this.world.cube.holder.rotation.x
         this.world.cube.holder.rotation.y = this.world.cube.holder.rotation.x
 
-        this.world.controller.edges.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
+        this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
       },
     })
+  }
 
+  restore() {
+    new Tween({
+      target: this.world.cube.holder.position,
+      duration: 500,
+      easing: Easing.Sine.Out(),
+      to: { y: 0 },
+      onUpdate: () => {
+        this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
+      },
+    })
   }
 
   zoom(play, time) {

@@ -1,9 +1,9 @@
 html, body {
   padding: 0;
   margin: 0;
-  font-size: 16px;
   color: white;
   user-select: none;
+  font-size: 5em;
 }
 
 h1, p {
@@ -31,21 +31,25 @@ i {
   transition: transform 1.5s ease-in-out;
 }
 
-/* #texts, #buttons {
-} */
-
-.text, .btn {
+#texts, #buttons {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.text, .btn {
+  position: fixed;
   text-align: center;
   opacity: 0;
 }
 
 .text-title {
-  top: 10%;
-  width: 100%;
-  font-size: 5.6em;
+  top: 7%;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 2.5em;
 }
 .text-title span {
   display: block;
@@ -66,9 +70,10 @@ i {
 }
 
 .text-note {
-  top: 90%;
-  width: 100%;
-  font-size: 1.8em;
+  top: 88%;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 1em;
 }
 
 .text.twinkle {
@@ -79,4 +84,42 @@ i {
   opacity: 0 !important;
   transition: opacity 0.5s;
   will-change: opacity;
+}
+
+.btn {
+  opacity: 1;
+  border: 0;
+  font-size: 1.2em;
+  color: #ffffffaa;
+  background-color: transparent;
+  appearance: none;
+  pointer-events: none;
+}
+
+/* 扩大点击范围 */
+.btn::after {
+  position: absolute;
+  content: '';
+  width: 3em;
+  height: 3em;
+  left: 50%;
+  top: 50%;
+  margin-left: -1.5em;
+  margin-top: -1.5em;
+}
+
+.btn svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.btn-stats {
+  top: 93%;
+  left: 1%;
+}
+
+.btn-prefs {
+  top: 93%;
+  right: 1%;
 }

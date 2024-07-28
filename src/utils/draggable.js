@@ -41,7 +41,6 @@ export default class Draggable {
 
         window.addEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false)
         window.addEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false)
-
       },
 
       move: (event) => {
@@ -55,7 +54,7 @@ export default class Draggable {
           this.position.delta = this.position.current.clone().sub(this.position.old)
           this.position.drag = this.position.current.clone().sub(this.position.start)
         }
-
+        
         this.onDragMove(this.position)
       },
 
@@ -98,8 +97,10 @@ export default class Draggable {
       : event
 
     this.position.current.set(dragEvent.pageX, dragEvent.pageY)
+    this.convertPosition(this.position.current)
   }
 
+  // 坐标标准化
   convertPosition(position) {
     position.x = (position.x / this.element.offsetWidth) * 2 - 1
     position.y = - ((position.y / this.element.offsetHeight) * 2 - 1)

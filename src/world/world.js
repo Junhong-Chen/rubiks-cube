@@ -1,11 +1,11 @@
 import Light from "./light"
 import Floor from "./floor"
-import UIController from "./ui"
+import UIControls from "./ui"
 import Cube from './cube/cube'
 import Storage from "./cube/storage"
 import Themes from "./cube/themes"
 import Scrambler from "./cube/scrambler"
-import Controller from "./cube/controls"
+import Controls from "./cube/controls"
 import Timer from "./timer"
 
 const SHOW = true
@@ -33,12 +33,13 @@ const BUTTONS = {
 
 export default class World {
   constructor(app) {
+
     this.dom = app.dom
     this.scene = app.scene
     this.debugger = app.debugger
     this.sizes = app.sizes
     this.camera = app.camera
-    this.orbitControls = app.orbitControls
+    this.updateFns = []
     this.init()
   }
 
@@ -46,7 +47,7 @@ export default class World {
     this.light = new Light(this)
     this.cube = new Cube(this)
     this.floor = new Floor(this)
-    this.ui = new UIController(this)
+    this.ui = new UIControls(this)
     this.timer = new Timer(this)
 
     this.state = STATE.MENU
@@ -55,7 +56,7 @@ export default class World {
     this.storage = new Storage(this)
     this.themes = new Themes(this)
     this.scrambler = new Scrambler(this)
-    this.controller = new Controller(this)
+    this.controls = new Controls(this)
 
     this.storage.init()
     this.cube.init()
@@ -74,7 +75,21 @@ export default class World {
     }, 500)
   }
 
-  update(deltaTime) {
+  addUpdateFn(fn) {
+    this.updateFns.push(fn)
+  }
+
+  removeUpdateFn(fn) {
+    const i = this.updateFns.findIndex(el => el === fn)
+    if (i >= 0) {
+      this.updateFns.splice(i, 1)
+    }
+  }
+
+  update(delta) {
+    if (this.updateFns.length > 0) {
+      this.updateFns.forEach(fn => fn(delta))
+    }
   }
 
   initActions() {
@@ -106,11 +121,11 @@ export default class World {
     if (show) {
       if (!this.saved) {
         this.scrambler.scramble()
-        this.controller.scrambleCube()
+        this.controls.scrambleCube()
         this.newGame = true
       }
 
-      const duration = this.saved ? 0 : this.scrambler.converted.length * (this.controller.flipSpeeds[0] + 10)
+      const duration = this.saved ? 0 : this.scrambler.converted.length * (this.controls.flipSpeeds[0] + 10)
 
       this.state = STATE.PLAYING
       this.saved = true
@@ -120,6 +135,7 @@ export default class World {
       this.ui.zoom(STATE.PLAYING, duration)
       this.ui.title(HIDE)
       this.ui.tweens.float.stop()
+      this.ui.restore()
       
       this.light.switch(Light.SWITCH.TURNON)
 
@@ -129,7 +145,7 @@ export default class World {
       }, this.ui.durations.zoom - 1000)
 
       setTimeout(() => {
-        this.controller.enable()
+        this.controls.enable()
         if (!this.newGame) this.timer.start(true)
       }, this.ui.durations.zoom)
 
@@ -140,14 +156,14 @@ export default class World {
 
       this.ui.zoom(STATE.MENU, 0)
 
-      this.controller.disable()
+      this.controls.disable()
       if (!this.newGame) this.timer.stop()
       this.ui.timer(HIDE)
 
       setTimeout(() => this.ui.title(SHOW), this.ui.durations.zoom - 1000)
 
       this.playing = false
-      this.controller.disable()
+      this.controls.disable()
     }
   }
 
