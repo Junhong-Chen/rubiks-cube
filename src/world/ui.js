@@ -28,7 +28,7 @@ export default class UIController {
     this.world.camera.updateProjectionMatrix()
 
     this.tweens.buttons = {}
-    this.tweens.timer = []
+    this.tweens.tick = []
     this.tweens.title = []
     this.tweens.best = []
     this.tweens.complete = []
@@ -219,7 +219,7 @@ export default class UIController {
 
     const duration = this.durations[best ? 'best' : 'complete']
 
-    if (!show) setTimeout(() => this.world.dom.texts.timer.style.transform = '', duration)
+    if (!show) setTimeout(() => this.world.dom.texts.tick.style.transform = '', duration)
 
     setTimeout(() => this.activeTransitions--, duration)
 
@@ -423,23 +423,23 @@ export default class UIController {
 
   }
 
-  timer(show) {
+  tick(show) {
 
     this.activeTransitions++
 
-    const timer = this.world.dom.texts.timer
+    const tick = this.world.dom.texts.tick
 
-    timer.style.opacity = 0
-    this.world.timer.convert()
-    this.world.timer.setText()
+    tick.style.opacity = 0
+    this.world.tick.convert()
+    this.world.tick.setText()
 
-    this.splitLetters(timer)
-    const letters = timer.querySelectorAll('i')
-    this.flipLetters('timer', letters, show)
+    this.splitLetters(tick)
+    const letters = tick.querySelectorAll('i')
+    this.flipLetters('tick', letters, show)
 
-    timer.style.opacity = 1
+    tick.style.opacity = 1
 
-    setTimeout(() => this.activeTransitions--, this.durations.timer)
+    setTimeout(() => this.activeTransitions--, this.durations.tick)
 
   }
 

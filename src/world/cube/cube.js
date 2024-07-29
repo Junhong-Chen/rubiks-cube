@@ -101,7 +101,7 @@ export default class Cube {
 
     const pieceSize = 1 / 3
 
-    const mainMaterial = new MeshStandardMaterial({
+    const material = new MeshStandardMaterial({
       roughness: 0.5,
       metalness: 0.5
     })
@@ -109,7 +109,7 @@ export default class Cube {
     const { pieceCornerRadius, edgeCornerRoundness, edgeScale, edgeDepth } = this.#gemotry
     const pieceMesh = new Mesh(
       new RoundedBoxGeometry(pieceSize, pieceCornerRadius, 3),
-      mainMaterial.clone()
+      material.clone()
     )
     pieceMesh.receiveShadow = true
     pieceMesh.castShadow = true
@@ -134,7 +134,7 @@ export default class Cube {
 
       position.edges.forEach(position => {
 
-        const edge = new Mesh(edgeGeometry, mainMaterial.clone())
+        const edge = new Mesh(edgeGeometry, material.clone())
 
         const name = ['L', 'R', 'D', 'U', 'B', 'F'][position]
         const distance = pieceSize / 2

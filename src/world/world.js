@@ -6,7 +6,7 @@ import Storage from "./cube/storage"
 import Themes from "./cube/themes"
 import Scrambler from "./cube/scrambler"
 import Controls from "./cube/controls"
-import Timer from "./timer"
+import Tick from "./tick"
 
 const SHOW = true
 const HIDE = false
@@ -48,7 +48,7 @@ export default class World {
     this.cube = new Cube(this)
     this.floor = new Floor(this)
     this.ui = new UIControls(this)
-    this.timer = new Timer(this)
+    this.tick = new Tick(this)
 
     this.state = STATE.MENU
     this.initActions()
@@ -101,6 +101,7 @@ export default class World {
       if (this.state === STATE.PLAYING) return
 
       if (this.state === STATE.MENU) {
+        // 双击判断
         if (!tappedTwice) {
           tappedTwice = true
           setTimeout(() => tappedTwice = false, 300)
@@ -136,17 +137,17 @@ export default class World {
       this.ui.title(HIDE)
       this.ui.tweens.float.stop()
       this.ui.restore()
-      
+
       this.light.switch(Light.SWITCH.TURNON)
 
       setTimeout(() => {
-        this.ui.timer(SHOW)
+        this.ui.tick(SHOW)
         this.ui.buttons(BUTTONS.PLAYING, BUTTONS.NONE)
       }, this.ui.durations.zoom - 1000)
 
       setTimeout(() => {
         this.controls.enable()
-        if (!this.newGame) this.timer.start(true)
+        if (!this.newGame) this.tick.start(true)
       }, this.ui.durations.zoom)
 
     } else {
@@ -157,8 +158,8 @@ export default class World {
       this.ui.zoom(STATE.MENU, 0)
 
       this.controls.disable()
-      if (!this.newGame) this.timer.stop()
-      this.ui.timer(HIDE)
+      if (!this.newGame) this.tick.stop()
+      this.ui.tick(HIDE)
 
       setTimeout(() => this.ui.title(SHOW), this.ui.durations.zoom - 1000)
 

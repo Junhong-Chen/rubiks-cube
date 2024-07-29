@@ -1,6 +1,6 @@
 import { Animation } from "../utils/animation.js"
 
-export default class Timer extends Animation {
+export default class Tick extends Animation {
 
   constructor(game) {
     super(false)
@@ -55,6 +55,6 @@ export default class Timer extends Animation {
   }
 
   setText() {
-    this.game.dom.texts.timer.innerHTML = this.converted
+    this.game.dom.texts.tick.innerHTML = this.converted
   }
 }

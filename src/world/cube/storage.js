@@ -44,7 +44,7 @@ export default class Storage {
   saveGame() {
     const gameInProgress = true
     const gameCubeData = { names: [], positions: [], rotations: [] }
-    const gameTime = this.world.timer.delta
+    const gameTime = this.world.tick.delta
 
     gameCubeData.size = this.world.cube.sizeGenerated
 

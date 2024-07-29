@@ -25,12 +25,12 @@ class App {
       prefs: $('#prefs'),
       theme: $('#theme'),
       texts: {
-        title: document.querySelector('.text-title'),
-        note: document.querySelector('.text-note'),
-        timer: document.querySelector('.text-timer'),
-        complete: document.querySelector('.text-complete'),
-        best: document.querySelector('.text-best-time'),
-        theme: document.querySelector('.text-theme'),
+        title: $('.text-title'),
+        note: $('.text-note'),
+        tick: $('.text-tick'),
+        complete: $('.text-complete'),
+        best: $('.text-best-time'),
+        theme: $('.text-theme'),
       },
       buttons: {
         stats: $('.btn-stats'),
@@ -63,15 +63,9 @@ class App {
     this.renderer.setPixelRatio(pixelRatio)
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = PCFSoftShadowMap
+
     this.dom.cube.appendChild(this.renderer.domElement)
     this.dom.canvas = this.renderer.domElement
-
-    // this.controls = new TrackballControls(this.camera, this.renderer.domElement)
-    // this.controls.noZoom = true
-    // this.controls.noPan = true
-    // this.controls.dynamicDampingFactor = 0.15
-    // this.controls.rotateSpeed = 1.5
-    // this.controls.enabled = false
 
     this.sizes.on('resize', this.resize)
 
@@ -83,7 +77,6 @@ class App {
   }
 
   update = ({ deltaTime }) => {
-    // this.controls.update()
     this.renderer.render(this.scene, this.camera)
 
     this.world.update(deltaTime)
@@ -107,7 +100,6 @@ class App {
     this.debugger.destroy()
     this.sizes.destroy()
     this.timer.destroy()
-    // this.controls.dispose()
     this.renderer.dispose()
     this.world.destroy()
     window.removeEventListener('beforeunload', this.destroy, false)
