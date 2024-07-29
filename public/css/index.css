@@ -74,6 +74,7 @@ i {
   left: 50%;
   translate: -50% 0;
   font-size: 1em;
+  letter-spacing: .2em;
 }
 
 .text.twinkle {

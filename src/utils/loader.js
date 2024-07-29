@@ -23,7 +23,6 @@ export default class Loader extends EventEmitter {
   init(scene) {
     // const loading = new Loading(scene)
     const dLoader = new DRACOLoader()
-    dLoader.setDecoderPath('/loader/draco/')
     this.#loaders.gltf = new GLTFLoader()
     this.#loaders.gltf.setDRACOLoader(dLoader)
     this.#loaders.texture = new TextureLoader()
