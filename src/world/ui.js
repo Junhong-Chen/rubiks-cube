@@ -1,5 +1,8 @@
 import { Tween, Easing } from "../utils/tween"
 
+const SHOW = 'show'
+const HIDE = 'hide'
+
 export default class UIController {
 
   constructor(world) {
@@ -39,36 +42,19 @@ export default class UIController {
   }
 
   buttons(show, hide) {
-
-    const buttonTween = (button, show) => {
-
-      return new Tween({
-        target: button.style,
-        duration: 300,
-        easing: show ? Easing.Power.Out(2) : Easing.Power.In(3),
-        from: { opacity: show ? 0 : 1 },
-        to: { opacity: show ? 1 : 0 },
-        onUpdate: tween => {
-
-          const translate = show ? 1 - tween.value : tween.value
-          button.style.transform = `translate3d(0, ${translate * 1.5}em, 0)`
-
-        },
-        onComplete: () => button.style.pointerEvents = show ? 'all' : 'none'
+    if (hide.length) {
+      hide.forEach(button => {
+        button.classList.remove(SHOW)
+        setTimeout(() => button.classList.add(HIDE), null)
       })
-
     }
 
-    hide.forEach(button =>
-      this.tweens.buttons[button] = buttonTween(this.world.dom.buttons[button], false)
-    )
-
-    setTimeout(() => show.forEach(button => {
-
-      this.tweens.buttons[button] = buttonTween(this.world.dom.buttons[button], true)
-
-    }), hide ? 500 : 0)
-
+    if (show.length) {
+      setTimeout(() => show.forEach(button => {
+        button.classList.add(SHOW)
+        button.classList.remove(HIDE)
+      }), 500)
+    }
   }
 
   cube(show, theming = false) {
@@ -385,39 +371,25 @@ export default class UIController {
   }
 
   title(show) {
-
     this.activeTransitions++
 
     const title = this.world.dom.texts.title
-
-    if (title.querySelector('span i') === null)
-      title.querySelectorAll('span').forEach(span => this.splitLetters(span))
-
-    const letters = title.querySelectorAll('i')
-
-    this.flipLetters('title', letters, show)
-
-    title.style.opacity = 1
-
     const note = this.world.dom.texts.note
 
     if (show) {
-      note.classList.remove('fade-out')
-      note.classList.add('twinkle')
+      title.classList.remove(HIDE)
+      note.classList.remove(HIDE)
+      title.classList.add(SHOW)
+      note.classList.add(SHOW)
     } else {
+      title.classList.remove(SHOW)
       note.style.opacity = window.getComputedStyle(note).opacity
-      note.classList.remove('twinkle')
-      setTimeout(() => note.classList.add('fade-out'), null)
+      note.classList.remove(SHOW)
+      setTimeout(() => {
+        title.classList.add(HIDE)
+        note.classList.add(HIDE)
+      }, null)
     }
-
-    // this.tweens.title[letters.length] = new Tween({
-    //   target: note.style,
-    //   easing: Easing.Sine.InOut(),
-    //   duration: show ? 800 : 400,
-    //   yoyo: show ? true : null,
-    //   from: { opacity: show ? 0 : (parseFloat(getComputedStyle(note).opacity)) },
-    //   to: { opacity: show ? 1 : 0 },
-    // })
 
     setTimeout(() => this.activeTransitions--, this.durations.title)
 

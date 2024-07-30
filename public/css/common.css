@@ -1,0 +1,22 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  color: white;
+  user-select: none;
+  font-size: 5em;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+i {
+  display: inline-block;
+  font-style: normal;
+}
+
+.ff-cursive {
+  font-family: cursive;
+}

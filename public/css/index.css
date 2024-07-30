@@ -1,18 +1,5 @@
-html, body {
-  padding: 0;
-  margin: 0;
-  color: white;
-  user-select: none;
-  font-size: 5em;
-}
-
-h1, p {
-  margin: 0;
-}
-
-i {
-  font-style: normal;
-}
+@import "common.css";
+@import "animation.css";
 
 #loading-bar {
   position: absolute;
@@ -23,7 +10,8 @@ i {
   transform: scale(0);
   transform-origin: center left;
   transition: transform 0.5s;
-  will-change: transform; /* 渲染性能优化 */
+  will-change: transform;
+  /* 渲染性能优化 */
 }
 
 #loading-bar.ended {
@@ -31,7 +19,8 @@ i {
   transition: transform 1.5s ease-in-out;
 }
 
-#texts, #buttons {
+#texts,
+#buttons {
   position: absolute;
   top: 0;
   left: 0;
@@ -39,37 +28,55 @@ i {
   height: 0;
 }
 
-.text, .btn {
+.text,
+.btn {
   position: fixed;
-  text-align: center;
-  opacity: 0;
 }
 
 .text-title {
-  top: 7%;
+  bottom: 80%;
   left: 50%;
   translate: -50% 0;
-  font-size: 2.5em;
-}
-.text-title span {
-  display: block;
+  font-size: 2.8em;
 }
 
-@keyframes twinkle {
-  from {
-    opacity: 0;
-  }
+.text-title i:not(:first-child) {
+  margin-left: -.24em;
+}
 
-  50% {
-    opacity: 1;
-  }
+.text-title i {
+  opacity: 0;
+}
 
-  to {
-    opacity: 0;
-  }
+.text-title.show i:first-child {
+  animation: .5s ease-out forwards rotate-in;
+}
+
+.text-title.show i:last-child {
+  animation: .5s ease-out forwards rotate-in, .5s ease-in .6s forwards crooked;
+}
+
+.text-title.hide i:first-child {
+  animation: .5s ease-in forwards rotate-out;
+}
+
+.text-title.hide i:last-child {
+  animation: .5s ease-in forwards rotate-crooked-out;
+}
+
+.text-tick {
+  top: 5%;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 3em;
+}
+
+.text-tick i {
+  opacity: 0;
 }
 
 .text-note {
+  opacity: 0;
   top: 88%;
   left: 50%;
   translate: -50% 0;
@@ -77,24 +84,24 @@ i {
   letter-spacing: .2em;
 }
 
-.text.twinkle {
+.text-note.show {
   animation: 2s ease-in-out infinite twinkle;
 }
 
-.text.fade-out {
+.text-note.hide {
   opacity: 0 !important;
   transition: opacity 0.5s;
   will-change: opacity;
 }
 
 .btn {
-  opacity: 1;
+  opacity: 0;
   border: 0;
   font-size: 1.2em;
   color: #ffffffaa;
   background-color: transparent;
   appearance: none;
-  pointer-events: none;
+  transform: translateY(1.5em);
 }
 
 /* 扩大点击范围 */
@@ -115,12 +122,31 @@ i {
   height: 1em;
 }
 
-.btn-stats {
-  top: 93%;
-  left: 1%;
+.btn-stats,
+.btn-back {
+  bottom: .8em;
+  left: .8em;
 }
 
-.btn-prefs {
-  top: 93%;
-  right: 1%;
+.btn-prefs,
+.btn-theme,
+.btn-reset {
+  bottom: .8em;
+  right: .8em;
+}
+
+.btn-stats.show,
+.btn-back.show,
+.btn-prefs.show,
+.btn-theme.show,
+.btn-reset.show {
+  animation: .5s ease-out forwards fade-in;
+}
+
+.btn-stats.hide,
+.btn-back.hide,
+.btn-prefs.hide,
+.btn-theme.hide,
+.btn-reset.hide {
+  animation: .5s ease-in forwards fade-out;
 }

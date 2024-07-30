@@ -7,18 +7,17 @@ export default class Light {
     TURNOFF: false
   }
 
-  #scene
-
   constructor(world) {
-    this.#scene = world.scene
-  
+    this.type = Light.SWITCH.TURNOFF
+
     this.aLight = this.addAmbientLight()
     this.pLight = this.addPointLight()
+    world.scene.add(this.aLight)
+    world.scene.add(this.pLight)
   }
 
   addAmbientLight() {
     const aLight = new AmbientLight('white', 4)
-    this.#scene.add(aLight)
     return aLight
   }
 
@@ -31,24 +30,15 @@ export default class Light {
     pLight.shadow.mapSize.set(256, 256)
     pLight.shadow.normalBias = 0.05
 
-    this.#scene.add(pLight)
-
     return pLight
   }
 
-  turnOn() {
-
-  }
-
-  turnOff() {
-
-  }
-
-  switch(type) {
+  switch(type, duration = 750) {
+    if (type === this.type) return
+    this.type = type
     const easing = Easing.Power.InOut()
-    const duration = 500
-    
-    switch(type) {
+
+    switch (type) {
       case Light.SWITCH.TURNON:
         new Tween({
           easing,
@@ -64,8 +54,8 @@ export default class Light {
           easing,
           duration,
           onUpdate: tween => {
-            this.pLight.intensity = (1 - tween.value ) * 32
-            this.pLight.angle = (1 - tween.value ) * Math.PI / 8
+            this.pLight.intensity = (1 - tween.value) * 32
+            this.pLight.angle = (1 - tween.value) * Math.PI / 8
           }
         })
         break

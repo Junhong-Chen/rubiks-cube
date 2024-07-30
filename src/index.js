@@ -41,32 +41,20 @@ class App {
       }
     }
 
-    const { width, height, pixelRatio } = this.sizes
+    const { width, height } = this.sizes
 
     this.camera = new PerspectiveCamera(45, width / height, 0.1, 1000)
-
-    const fovRad = this.camera.fov * MathUtils.DEG2RAD
-    let distance = (stage.aspect < this.camera.aspect)
-      ? (stage.height / 2) / Math.tan(fovRad / 2)
-      : (stage.width / this.camera.aspect) / (2 * Math.tan(fovRad / 2))
-    distance *= 0.5
-    this.camera.position.set(distance, distance, distance)
-    this.camera.lookAt(this.scene.position)
-
-    const docFontSize = stage.aspect < width / height ? height / 100 * stage.aspect : width / 100
-    document.documentElement.style.fontSize = docFontSize + 'px'
 
     this.renderer = new WebGLRenderer({
       antialias: true
     })
-    this.renderer.setSize(width, height)
-    this.renderer.setPixelRatio(pixelRatio)
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = PCFSoftShadowMap
 
     this.dom.cube.appendChild(this.renderer.domElement)
     this.dom.canvas = this.renderer.domElement
 
+    this.resize()
     this.sizes.on('resize', this.resize)
 
     this.timer.on('tick', this.update)
@@ -74,6 +62,12 @@ class App {
     window.addEventListener('beforeunload', this.destroy, false)
 
     this.world = new World(this)
+
+    // test
+    const guiObj = {
+      logCamera: () => console.log(this.camera)
+    }
+    this.debugger.gui.add(guiObj, 'logCamera')
   }
 
   update = ({ deltaTime }) => {
@@ -88,6 +82,14 @@ class App {
     this.renderer.setPixelRatio(pixelRatio)
     this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
+
+    const fovRad = this.camera.fov * MathUtils.DEG2RAD
+    let distance = (stage.aspect < this.camera.aspect)
+      ? (stage.height / 2) / Math.tan(fovRad / 2)
+      : (stage.width / this.camera.aspect) / (2 * Math.tan(fovRad / 2))
+    distance *= 0.5
+    this.camera.position.set(distance, distance, distance)
+    this.camera.lookAt(this.scene.position)
 
     const docFontSize = stage.aspect < width / height ? height / 100 * stage.aspect : width / 100
     document.documentElement.style.fontSize = docFontSize + 'px'

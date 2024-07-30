@@ -21,7 +21,7 @@ export default class Tick extends Animation {
     this.startTime = 0
     this.currentTime = 0
     this.deltaTime = 0
-    this.converted = '0:00'
+    this.converted = '00:00'
   }
 
   stop() {
@@ -48,10 +48,12 @@ export default class Tick extends Animation {
   }
 
   convert() {
-    const seconds = parseInt((this.deltaTime / 1000) % 60)
-    const minutes = parseInt((this.deltaTime / (1000 * 60)))
+    const totalSeconds = Math.floor(this.deltaTime / 1000)
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, 0)
+    const seconds = String(totalSeconds % 60).padStart(2, 0)
 
-    this.converted = minutes + ':' + (seconds < 10 ? '0' : '') + seconds
+    this.converted = `${hours > 0 ? hours + ':' : ''}${minutes}:${seconds}`
   }
 
   setText() {
