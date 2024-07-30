@@ -9,7 +9,7 @@ export default class Cube {
     pieceCornerRadius: 0.12,
     edgeCornerRoundness: 0.15,
     edgeScale: 0.85,
-    edgeDepth: 0.0001,
+    edgeDepth: 0.001,
   }
   constructor(world) {
     this.world = world
@@ -102,8 +102,8 @@ export default class Cube {
     const pieceSize = 1 / 3
 
     const material = new MeshStandardMaterial({
-      roughness: 0.5,
-      metalness: 0.5
+      roughness: 0.4,
+      metalness: 0.6
     })
 
     const { pieceCornerRadius, edgeCornerRoundness, edgeScale, edgeDepth } = this.#gemotry

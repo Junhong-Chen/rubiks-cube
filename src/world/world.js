@@ -30,6 +30,11 @@ const BUTTONS = {
   NONE: [],
 }
 
+function buttonConcatDom(buttons, dom) {
+  Object.values(buttons).map(arr => {
+    if (arr.length) arr.forEach((name, i) => arr[i] = dom[name])
+  })
+}
 
 export default class World {
   constructor(app) {
@@ -50,19 +55,23 @@ export default class World {
     this.ui = new UIControls(this)
     this.tick = new Tick(this)
 
-    this.state = STATE.MENU
-    this.initActions()
-
     this.storage = new Storage(this)
     this.themes = new Themes(this)
     this.scrambler = new Scrambler(this)
     this.controls = new Controls(this)
+
+    this.state = STATE.MENU
+    this.newGame = false
+    this.saved = false
+    this.initActions()
 
     this.storage.init()
     this.cube.init()
     this.ui.init()
 
     this.storage.loadGame()
+
+    buttonConcatDom(BUTTONS, this.dom.buttons)
 
     setTimeout(() => {
 
@@ -101,14 +110,14 @@ export default class World {
       if (this.state === STATE.PLAYING) return
 
       if (this.state === STATE.MENU) {
-        // 双击判断
+        // 判断双击
         if (!tappedTwice) {
           tappedTwice = true
           setTimeout(() => tappedTwice = false, 300)
           return false
 
         }
-        this.start(SHOW)
+        this.game(SHOW)
       } else if (this.state === STATE.COMPLETE) {
         this.complete(HIDE)
       } else if (this.state === STATE.STATS) {
@@ -116,9 +125,34 @@ export default class World {
       }
 
     }, false)
+
+    // 扭动魔方后开始计时
+    this.controls.onLayerMove = () => {
+      if (this.newGame) {
+        this.tick.start(true)
+        this.newGame = false
+      }
+    }
+
+    // 返回
+    this.dom.buttons.back.onclick = event => {
+      if (this.ui.activeTransitions > 0) return
+
+      switch(this.state) {
+        case STATE.PLAYING:
+          this.game(HIDE)
+          break
+        case STATE.PREFS:
+          this.prefs(HIDE)
+          break
+        case STATE.THEME:
+          this.theme(HIDE)
+          break
+      }
+    }
   }
 
-  start(show) {
+  game(show) {
     if (show) {
       if (!this.saved) {
         this.scrambler.scramble()
@@ -161,7 +195,10 @@ export default class World {
       if (!this.newGame) this.tick.stop()
       this.ui.tick(HIDE)
 
+      this.light.switch(Light.SWITCH.TURNOFF, this.ui.durations.zoom)
+
       setTimeout(() => this.ui.title(SHOW), this.ui.durations.zoom - 1000)
+
 
       this.playing = false
       this.controls.disable()
