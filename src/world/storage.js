@@ -16,7 +16,7 @@ export default class Storage {
 
   init() {
     this.loadPreferences()
-    // this.loadScores()
+    this.loadScores()
   }
 
   loadGame() {

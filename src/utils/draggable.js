@@ -1,6 +1,5 @@
 import { Vector2 } from "three"
 
-window.addEventListener('touchmove', () => { })
 document.addEventListener('touchmove', event => { event.preventDefault() }, { passive: false })
 
 export default class Draggable {
@@ -20,12 +19,10 @@ export default class Draggable {
     }, options)
 
     this.element = element
-    this.touch = null
 
     this.drag = {
       start: (event) => {
-        if (event.type == 'mousedown' && event.which != 1) return
-        if (event.type == 'touchstart' && event.touches.length > 1) return
+        if (event.pointerType === 'mouse' && event.button !== 0) return
 
         this.getPositionCurrent(event)
 
@@ -35,12 +32,11 @@ export default class Draggable {
           this.position.drag.set(0, 0)
         }
 
-        this.touch = (event.type == 'touchstart')
-
         this.onDragStart(this.position)
 
-        window.addEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false)
-        window.addEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false)
+        window.addEventListener('pointermove', this.drag.move, false)
+        window.addEventListener('pointerup', this.drag.end, false)
+        window.addEventListener('pointercancel', this.drag.end, false)
       },
 
       move: (event) => {
@@ -63,8 +59,9 @@ export default class Draggable {
 
         this.onDragEnd(this.position)
 
-        window.removeEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false)
-        window.removeEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false)
+        window.removeEventListener('pointermove', this.drag.move, false)
+        window.removeEventListener('pointerup', this.drag.end, false)
+        window.removeEventListener('pointercancel', this.drag.end, false)
       },
     }
 
@@ -78,25 +75,19 @@ export default class Draggable {
   }
 
   enable() {
-    this.element.addEventListener('touchstart', this.drag.start, false)
-    this.element.addEventListener('mousedown', this.drag.start, false)
+    this.element.addEventListener('pointerdown', this.drag.start, false)
 
     return this
   }
 
   disable() {
-    this.element.removeEventListener('touchstart', this.drag.start, false)
-    this.element.removeEventListener('mousedown', this.drag.start, false)
+    this.element.removeEventListener('pointerdown', this.drag.start, false)
 
     return this
   }
 
   getPositionCurrent(event) {
-    const dragEvent = event.touches
-      ? (event.touches[0] || event.changedTouches[0])
-      : event
-
-    this.position.current.set(dragEvent.pageX, dragEvent.pageY)
+    this.position.current.set(event.pageX, event.pageY)
     this.convertPosition(this.position.current)
   }
 

@@ -1,6 +1,7 @@
 import { Object3D, Mesh, Vector3, MeshStandardMaterial } from "three"
 import { RoundedBoxGeometry } from "./roundedBoxGeometry.js"
 import { RoundedPlaneGeometry } from "./roundedPlaneGeometry.js"
+import { CUBE_DIRECTION } from "../../constants.js"
 
 export default class Cube {
   #size = 3 // 阶层
@@ -13,17 +14,20 @@ export default class Cube {
   }
   constructor(world) {
     this.world = world
-    this.holder = new Object3D()
+    this.holder = new Object3D() // 控制浮动动画的的对象
     this.holder.name = 'holder'
-    this.animator = new Object3D()
+    this.animator = new Object3D() // 控制旋转和平移动画的的对象
     this.animator.name = 'animator'
     this.object = new Object3D()
-    this.cubes = []
 
     this.holder.add(this.animator)
     this.animator.add(this.object)
 
     world.scene.add(this.holder)
+
+    this.cubes = [] // 魔方的块
+    this.edges = [] // 块上的面
+    this.pieces = [] // 块 + 面
   }
 
   init() {
@@ -58,11 +62,11 @@ export default class Cube {
 
 
   reset() {
-    this.world.controls.edges.rotation.set(0, 0, 0)
-
     this.holder.rotation.set(0, 0, 0)
-    this.object.rotation.set(0, 0, 0)
     this.animator.rotation.set(0, 0, 0)
+    this.object.rotation.set(0, 0, 0)
+
+    this.world.controls.cubeHelper.rotation.set(0, 0, 0)
   }
 
   generatePositions() {
@@ -81,12 +85,12 @@ export default class Cube {
           let position = new Vector3(first + x, first + y, first + z)
           let edges = []
 
-          if (x == 0) edges.push(0)
-          if (x == m) edges.push(1)
-          if (y == 0) edges.push(2)
-          if (y == m) edges.push(3)
-          if (z == 0) edges.push(4)
-          if (z == m) edges.push(5)
+          if (x === 0) edges.push(0)
+          if (x === m) edges.push(1)
+          if (y === 0) edges.push(2)
+          if (y === m) edges.push(3)
+          if (z === 0) edges.push(4)
+          if (z === m) edges.push(5)
 
           position.edges = edges
           this.positions.push(position)
@@ -96,9 +100,6 @@ export default class Cube {
   }
 
   generateModel() {
-    this.pieces = []
-    this.edges = []
-
     const pieceSize = 1 / 3
 
     const material = new MeshStandardMaterial({
@@ -130,13 +131,12 @@ export default class Cube {
       piece.position.copy(position.clone().divideScalar(3))
       piece.add(pieceCube)
       piece.name = index
-      piece.edgesName = ''
 
       position.edges.forEach(position => {
 
         const edge = new Mesh(edgeGeometry, material.clone())
 
-        const name = ['L', 'R', 'D', 'U', 'B', 'F'][position]
+        const name = CUBE_DIRECTION[position]
         const distance = pieceSize / 2
 
         edge.position.set(
@@ -163,7 +163,7 @@ export default class Cube {
         pieceEdges.push(name)
         this.edges.push(edge)
 
-      });
+      })
 
       piece.userData.edges = pieceEdges
       piece.userData.cube = pieceCube
@@ -171,7 +171,7 @@ export default class Cube {
       piece.userData.start = {
         position: piece.position.clone(),
         rotation: piece.rotation.clone(),
-      };
+      }
 
       this.pieces.push(piece)
 

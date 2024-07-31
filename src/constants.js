@@ -1,4 +1,5 @@
-export const Preset = {
+// 魔方预设值
+export const CUBE_PRESET = {
   checkerboard: {
     size: 3,
     indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
@@ -62,3 +63,12 @@ export const Preset = {
     ],
   },
 }
+
+// 魔方六个面的方位
+export const CUBE_DIRECTION = ['L', 'R', 'D', 'U', 'B', 'F']
+
+export const SHOW = 'show'
+export const HIDE = 'hide'
+
+export const START = true
+export const STOP = false

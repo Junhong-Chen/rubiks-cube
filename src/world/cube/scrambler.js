@@ -13,9 +13,9 @@ export default class Scrambler {
 
     this.dificulty = 0
 
-    this.scrambleLength = {
+    this.scrambleCount = {
       2: [7, 9, 11],
-      3: [20, 25, 30],
+      3: [2, 25, 30],
       4: [30, 40, 50],
       5: [40, 60, 80],
     }
@@ -28,10 +28,10 @@ export default class Scrambler {
     const { size } = this.world.cube
 
     if (moves.length < 1) {
-      const scrambleLength = this.scrambleLength[size][this.dificulty]
+      const scrambleCount = this.scrambleCount[size][this.dificulty]
 
       const faces = size < 4 ? FACES.SMALL : FACES.LARGE
-      const total = scramble === undefined ? scrambleLength : scramble
+      const total = scramble === undefined ? scrambleCount : scramble
 
       let count = 0
       while (count < total) {

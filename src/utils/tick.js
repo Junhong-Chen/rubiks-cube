@@ -2,10 +2,11 @@ import { Animation } from "../utils/animation.js"
 
 export default class Tick extends Animation {
 
-  constructor(game) {
+  constructor(world) {
     super(false)
 
-    this.game = game
+    this.world = world
+
     this.reset()
   }
 
@@ -57,6 +58,6 @@ export default class Tick extends Animation {
   }
 
   setText() {
-    this.game.dom.texts.tick.innerHTML = this.converted
+    this.world.dom.texts.tick.innerHTML = this.converted
   }
 }

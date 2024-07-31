@@ -12,9 +12,27 @@
   <div id="ui">
     <div id="loading-bar"></div>
     <div id="cube"></div>
-    <div id="stats"></div>
+    <div id="stats">
+      <div class="stats-item" name="cube-size">
+        <i>魔方阶层：</i><b class="f-number">3x3x3</b>
+      </div>
+      <div class="stats-item" name="game-time">
+        <i>游玩时长：</i><b class="f-number">-</b>
+      </div>
+      <div class="stats-item" name="total-solves">
+        <i>完成次数：</i><b class="f-number">-</b>
+      </div>
+      <div class="stats-item" name="best-time">
+        <i>最佳成绩：</i><b class="f-number">-</b>
+      </div>
+      <div class="stats-item" name="worst-time">
+        <i>最差成绩：</i><b class="f-number">-</b>
+      </div>
+      <div class="stats-item" name="average">
+        <i>平均成绩：</i><b class="f-number">-</b>
+      </div>
+    </div>
     <div id="prefs"></div>
-    <div id="theme"></div>
     <div id="texts">
       <h1 class="text text-title">
         <i>魔</i>
@@ -23,14 +41,15 @@
       <div class="text text-note">
         双击屏幕开始
       </div>
-      <div class="text text-tick ff-cursive">
-        <!-- 0:00 -->
+      <div class="text text-tick f-number">
       </div>
       <div class="text text-complete">
-        <span>完成！</span>
+        <span>完成</span>
       </div>
       <div class="text text-best-time">
-        <icon trophy></icon>
+        <svg class="icon" viewBox="0 0 576 512">
+          <path fill="currentColor" d="M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 66.5 77.9 131.7 171.9 142.4C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6C498.4 275.6 576 210.3 576 144V88c0-13.3-10.7-24-24-24zM64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-47.5-16.4-77-49.9-77-70.2zm448 0c0 20.2-29.4 53.8-77 70.2 7-25 11.8-53.6 12.8-86.2H512v16zm-127.3 4.7l-39.6 38.6 9.4 54.6c1.7 9.8-8.7 17.2-17.4 12.6l-49-25.8-49 25.8c-8.8 4.6-19.1-2.9-17.4-12.6l9.4-54.6-39.6-38.6c-7.1-6.9-3.2-19 6.7-20.5l54.8-8 24.5-49.6c4.4-8.9 17.1-8.9 21.5 0l24.5 49.6 54.8 8c9.6 1.5 13.5 13.6 6.4 20.5z"></path>
+        </svg>
         <span>新记录！</span>
       </div>
     </div>

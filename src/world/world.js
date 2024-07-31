@@ -1,15 +1,14 @@
 import Light from "./light"
 import Floor from "./floor"
-import UIControls from "./ui"
+import UI from "./ui"
+import Storage from "./storage"
+import Scores from "./scores"
 import Cube from './cube/cube'
-import Storage from "./cube/storage"
 import Themes from "./cube/themes"
 import Scrambler from "./cube/scrambler"
 import Controls from "./cube/controls"
-import Tick from "./tick"
-
-const SHOW = true
-const HIDE = false
+import Tick from "../utils/tick"
+import { SHOW, HIDE, START, STOP } from "../constants"
 
 const STATE = {
   MENU: 0,
@@ -52,8 +51,9 @@ export default class World {
     this.light = new Light(this)
     this.cube = new Cube(this)
     this.floor = new Floor(this)
-    this.ui = new UIControls(this)
+    this.ui = new UI(this)
     this.tick = new Tick(this)
+    this.scores = new Scores(this)
 
     this.storage = new Storage(this)
     this.themes = new Themes(this)
@@ -75,7 +75,7 @@ export default class World {
 
     setTimeout(() => {
 
-      this.ui.float()
+      this.ui.float(START)
       this.ui.cube(SHOW)
 
       setTimeout(() => this.ui.title(SHOW), 700)
@@ -135,10 +135,10 @@ export default class World {
     }
 
     // 返回
-    this.dom.buttons.back.onclick = event => {
+    this.dom.buttons.back.onclick = () => {
       if (this.ui.activeTransitions > 0) return
 
-      switch(this.state) {
+      switch (this.state) {
         case STATE.PLAYING:
           this.game(HIDE)
           break
@@ -150,10 +150,19 @@ export default class World {
           break
       }
     }
+
+    // 设置
+    this.dom.buttons.prefs.onclick = () => this.prefs(SHOW)
+
+    // 记录
+    this.dom.buttons.stats.onclick = () => this.stats(SHOW)
+
+    // 完成
+    this.controls.onSolved = () => this.complete(SHOW)
   }
 
-  game(show) {
-    if (show) {
+  game(visible) {
+    if (visible === SHOW) {
       if (!this.saved) {
         this.scrambler.scramble()
         this.controls.scrambleCube()
@@ -166,11 +175,9 @@ export default class World {
       this.saved = true
 
       this.ui.buttons(BUTTONS.NONE, BUTTONS.MENU)
-
       this.ui.zoom(STATE.PLAYING, duration)
       this.ui.title(HIDE)
-      this.ui.tweens.float.stop()
-      this.ui.restore()
+      this.ui.float(STOP)
 
       this.light.switch(Light.SWITCH.TURNON)
 
@@ -188,8 +195,8 @@ export default class World {
       this.state = STATE.MENU
 
       this.ui.buttons(BUTTONS.MENU, BUTTONS.PLAYING)
-
       this.ui.zoom(STATE.MENU, 0)
+      this.ui.float(START)
 
       this.controls.disable()
       if (!this.newGame) this.tick.stop()
@@ -199,9 +206,102 @@ export default class World {
 
       setTimeout(() => this.ui.title(SHOW), this.ui.durations.zoom - 1000)
 
-
       this.playing = false
       this.controls.disable()
+    }
+  }
+
+  prefs(visible) {
+    if (visible === SHOW) {
+      if (this.ui.activeTransitions > 0) return
+
+      this.state = STATE.PREFS
+
+      this.ui.buttons(BUTTONS.PREFS, BUTTONS.MENU)
+
+      this.ui.title(HIDE)
+      this.ui.cube(HIDE)
+
+      setTimeout(() => this.ui.preferences(SHOW), 1000)
+    } else {
+      this.cube.resize()
+
+      this.state = STATE.MENU
+
+      this.ui.buttons(BUTTONS.MENU, BUTTONS.PREFS)
+
+      this.ui.preferences(HIDE)
+
+      setTimeout(() => this.ui.cube(SHOW), 500)
+      setTimeout(() => this.ui.title(SHOW), 1200)
+    }
+  }
+
+  stats(visible) {
+    if (visible === SHOW) {
+      if (this.ui.activeTransitions > 0) return
+
+      this.state = STATE.STATS
+
+      this.ui.buttons(BUTTONS.STATS, BUTTONS.MENU)
+
+      this.ui.title(HIDE)
+      this.ui.cube(HIDE)
+
+      setTimeout(() => this.ui.stats(SHOW), 1000)
+    } else {
+      this.state = STATE.MENU
+
+      this.ui.buttons(BUTTONS.MENU, BUTTONS.NONE)
+
+      this.ui.stats(HIDE)
+
+      setTimeout(() => this.ui.cube(SHOW), 500)
+      setTimeout(() => this.ui.title(SHOW), 1200)
+    }
+  }
+
+  complete(visible) {
+    if (visible === SHOW) {
+      this.ui.buttons(BUTTONS.COMPLETE, BUTTONS.PLAYING)
+
+      this.state = STATE.COMPLETE
+      this.saved = false
+
+      this.controls.disable()
+      this.tick.stop()
+      this.storage.clearGame()
+
+      this.bestTime = this.scores.addScore(this.tick.deltaTime)
+
+      this.ui.zoom(STATE.MENU, 0)
+      this.ui.elevate(START)
+      this.ui.float(START)
+
+      this.light.switch(Light.SWITCH.TURNOFF, this.ui.durations.zoom)
+
+      setTimeout(() => {
+        this.ui.complete(SHOW, this.bestTime)
+        // this.confetti.start()
+      }, 1000)
+    } else {
+      this.state = STATE.STATS
+      this.saved = false
+
+      this.ui.tick(HIDE)
+      this.ui.complete(HIDE, this.bestTime)
+      this.ui.cube(HIDE)
+      this.tick.reset()
+
+      setTimeout(() => {
+        this.cube.reset()
+        // this.confetti.stop()
+
+        this.ui.stats(SHOW)
+        this.ui.elevate(STOP)
+      }, 1000)
+
+      return false
     }
   }
 

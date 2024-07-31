@@ -388,7 +388,6 @@ export default class Controls {
 
         const layer = this.flipLayer.slice(0)
 
-        // this.world.cube.object.rotation.fromArray(this.snapRotation(this.world.cube.object.rotation.toArray())) // 矫正 cube 转向
         this.group.rotation.fromArray(this.snapRotation(this.group.rotation.toArray()))
         this.deselectLayer(this.flipLayer)
 
@@ -420,8 +419,6 @@ export default class Controls {
       const dragDir = offsetHelper.localToWorld(acceleration.clone()).normalize()
       const rotationAxis = _tempVector.copy(dragDir).cross(cameraDir).normalize()
       const rotationAngle = acceleration.length() * rotationSpeed
-
-      // this.arrow.setDirection(rotationAxis)
 
       _tempQuaternion.setFromAxisAngle(rotationAxis, rotationAngle)
       cubeHelper.applyQuaternion(_tempQuaternion)
@@ -566,7 +563,7 @@ export default class Controls {
     return momentum
   }
 
-  // 将角度圆整到最接近的 90° 的倍数
+  // 将角度圆整到 90° 的倍数
   roundAngle(angle) {
     const round = Math.PI / 2
     return Math.sign(angle) * Math.round(Math.abs(angle) / round) * round
@@ -579,22 +576,27 @@ export default class Controls {
   // 检查魔方是否还原
   checkIsSolved() {
     let solved = true
-    const sides = { 'x-': [], 'x+': [], 'y-': [], 'y+': [], 'z-': [], 'z+': [] }
+    const sides = { 'x+': [], 'x-': [], 'y+': [], 'y-': [], 'z+': [], 'z-': [] }
+    const { cube } = this.world
 
-    this.world.cube.edges.forEach(edge => {
-      const position = edge.parent
-        .localToWorld(edge.position.clone())
-        .sub(this.world.cube.object.position)
+    // 找到位于同一个面的 edge
+    cube.edges.forEach(edge => {
+      const position = edge.parent.localToWorld(edge.position.clone())
+      cube.object.worldToLocal(position)
 
-      const mainAxis = this.getMaxAxis(position)
-      const mainSign = position.multiplyScalar(2).round()[mainAxis] < 1 ? '-' : '+'
+      const axis = this.getMaxAxis(position)
+      const sign = position[axis] > 0 ? '+' : '-'
 
-      sides[mainAxis + mainSign].push(edge.name)
+      sides[axis + sign].push(edge.name)
     })
 
-    Object.keys(sides).forEach(side => {
-      if (!sides[side].every(value => value === sides[side][0])) solved = false
-    })
+    // 判断每一个面上的 edge 方位是否都一致
+    for (const side of Object.keys(sides)) {
+      if (!sides[side].every(value => value === sides[side][0])) {
+        solved = false
+        break
+      }
+    }
 
     if (solved) this.onSolved()
   }

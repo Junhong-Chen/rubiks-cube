@@ -63,7 +63,7 @@ class App {
 
     this.world = new World(this)
 
-    // test
+    // debugger
     const guiObj = {
       logCamera: () => console.log(this.camera)
     }

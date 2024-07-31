@@ -1,7 +1,5 @@
 import { Tween, Easing } from "../utils/tween"
-
-const SHOW = 'show'
-const HIDE = 'hide'
+import { SHOW, HIDE, START } from "../constants"
 
 export default class UIController {
 
@@ -12,7 +10,7 @@ export default class UIController {
     this.tweens = {}
     this.durations = {}
     this.data = {
-      cubeY: 0,
+      cubeY: -0.2,
       cameraZoom: 0.85,
     }
 
@@ -57,7 +55,7 @@ export default class UIController {
     }
   }
 
-  cube(show, theming = false) {
+  cube(visible, theming = false) {
 
     this.activeTransitions++
 
@@ -65,6 +63,7 @@ export default class UIController {
 
     const currentY = this.world.cube.animator.position.y
     const currentRotation = this.world.cube.animator.rotation.x
+    const show = visible === SHOW
 
     this.tweens.cube = new Tween({
       duration: show ? 3000 : 1250,
@@ -85,19 +84,13 @@ export default class UIController {
     if (theming) {
 
       if (show) {
-
         this.world.camera.zoom = 0.75
         this.world.camera.updateProjectionMatrix()
-
       } else {
-
         setTimeout(() => {
-
           this.world.camera.zoom = this.data.cameraZoom
           this.world.camera.updateProjectionMatrix()
-
         }, 1500)
-
       }
 
     }
@@ -108,34 +101,31 @@ export default class UIController {
 
   }
 
-  float() {
+  float(play) {
     try { this.tweens.float.stop() } catch (e) { }
 
-    this.tweens.float = new Tween({
-      duration: 1500,
-      easing: Easing.Sine.InOut(),
-      yoyo: true,
-      onUpdate: tween => {
-        this.world.cube.holder.position.y = (- 0.02 + tween.value * 0.04)
-        this.world.cube.holder.rotation.x = 0.005 - tween.value * 0.01
-        this.world.cube.holder.rotation.z = - this.world.cube.holder.rotation.x
-        this.world.cube.holder.rotation.y = this.world.cube.holder.rotation.x
+    if (play === START) {
+      this.tweens.float = new Tween({
+        duration: 1500,
+        easing: Easing.Sine.InOut(),
+        yoyo: true,
+        onUpdate: tween => {
+          this.world.cube.holder.position.y = tween.value * 0.1
 
-        this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
-      },
-    })
-  }
-
-  restore() {
-    new Tween({
-      target: this.world.cube.holder.position,
-      duration: 500,
-      easing: Easing.Sine.Out(),
-      to: { y: 0 },
-      onUpdate: () => {
-        this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
-      },
-    })
+          this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
+        },
+      })
+    } else {
+      new Tween({
+        target: this.world.cube.holder.position,
+        duration: 500,
+        easing: Easing.Sine.Out(),
+        to: { y: 0 },
+        onUpdate: () => {
+          this.world.controls.cubeHelper.position.y = this.world.cube.holder.position.y + this.world.cube.object.position.y
+        },
+      })
+    }
   }
 
   zoom(play, time) {
@@ -151,6 +141,7 @@ export default class UIController {
       target: this.world.camera,
       duration: duration,
       easing: easing,
+      from: { zoom: this.world.camera.zoom },
       to: { zoom: zoom },
       onUpdate: () => { this.world.camera.updateProjectionMatrix() },
     })
@@ -169,18 +160,16 @@ export default class UIController {
 
   }
 
-  elevate(complete) {
+  elevate(play) {
 
     this.activeTransitions++
 
-    const cubeY =
-
-      this.tweens.elevate = new Tween({
-        target: this.world.cube.object.position,
-        duration: complete ? 1500 : 0,
-        easing: Easing.Power.InOut(3),
-        to: { y: complete ? -0.05 : this.data.cubeY }
-      })
+    this.tweens.elevate = new Tween({
+      target: this.world.cube.object.position,
+      duration: play ? 1500 : 0,
+      easing: Easing.Power.InOut(3),
+      to: { y: play ? -0.05 : this.data.cubeY }
+    })
 
     this.durations.elevate = 1500
 
@@ -188,31 +177,20 @@ export default class UIController {
 
   }
 
-  complete(show, best) {
-
+  complete(visible, best) {
     this.activeTransitions++
 
     const text = best ? this.world.dom.texts.best : this.world.dom.texts.complete
+    if (visible === SHOW) text.classList.add(SHOW)
 
-    if (text.querySelector('span i') === null)
-      text.querySelectorAll('span').forEach(span => this.splitLetters(span))
-
-    const letters = text.querySelectorAll('.icon, i')
-
-    this.flipLetters(best ? 'best' : 'complete', letters, show)
-
-    text.style.opacity = 1
-
-    const duration = this.durations[best ? 'best' : 'complete']
-
-    if (!show) setTimeout(() => this.world.dom.texts.tick.style.transform = '', duration)
+    const duration = 500
+    if (visible === HIDE) setTimeout(() => this.world.dom.texts.tick.style.transform = '', duration)
 
     setTimeout(() => this.activeTransitions--, duration)
-
   }
 
-  stats(show) {
-
+  stats(visible) {
+    const show = visible === SHOW
     if (show) this.world.scores.calcStats()
 
     this.activeTransitions++
@@ -221,7 +199,7 @@ export default class UIController {
 
     let tweenId = -1
 
-    const stats = this.world.dom.stats.querySelectorAll('.stats')
+    const stats = this.world.dom.stats.querySelectorAll('.stats-item')
     const easing = show ? Easing.Power.Out(2) : Easing.Power.In(3)
 
     stats.forEach((stat, index) => {
@@ -251,15 +229,15 @@ export default class UIController {
 
   }
 
-  preferences(show) {
+  preferences(visible) {
 
-    this.ranges(this.world.dom.prefs.querySelectorAll('.range'), 'prefs', show)
+    this.ranges(this.world.dom.prefs.querySelectorAll('.range'), 'prefs', visible === SHOW)
 
   }
 
-  theming(show) {
+  theming(visible) {
 
-    this.ranges(this.world.dom.theme.querySelectorAll('.range'), 'prefs', show)
+    this.ranges(this.world.dom.theme.querySelectorAll('.range'), 'prefs', visible === SHOW)
 
   }
 
@@ -370,13 +348,13 @@ export default class UIController {
 
   }
 
-  title(show) {
+  title(visible) {
     this.activeTransitions++
 
     const title = this.world.dom.texts.title
     const note = this.world.dom.texts.note
 
-    if (show) {
+    if (visible === SHOW) {
       title.classList.remove(HIDE)
       note.classList.remove(HIDE)
       title.classList.add(SHOW)
@@ -395,7 +373,7 @@ export default class UIController {
 
   }
 
-  tick(show) {
+  tick(visible) {
 
     this.activeTransitions++
 
@@ -407,7 +385,7 @@ export default class UIController {
 
     this.splitLetters(tick)
     const letters = tick.querySelectorAll('i')
-    this.flipLetters('tick', letters, show)
+    this.flipLetters('tick', letters, visible === SHOW)
 
     tick.style.opacity = 1
 

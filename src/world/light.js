@@ -1,4 +1,4 @@
-import { AmbientLight, DirectionalLight, PointLight, DirectionalLightHelper, PointLightHelper, SpotLight } from "three"
+import { AmbientLight, SpotLight } from "three"
 import { Tween, Easing } from "../utils/tween.js"
 
 export default class Light {
