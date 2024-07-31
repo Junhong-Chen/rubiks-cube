@@ -1,6 +1,5 @@
 import { Object3D, Mesh, Vector3, MeshStandardMaterial } from "three"
-import { RoundedBoxGeometry } from "./roundedBoxGeometry.js"
-import { RoundedPlaneGeometry } from "./roundedPlaneGeometry.js"
+import { RoundedBoxGeometry, RoundedPlaneGeometry } from "./geometry.js"
 import { CUBE_DIRECTION } from "../../constants.js"
 
 export default class Cube {
@@ -115,7 +114,7 @@ export default class Cube {
     pieceMesh.receiveShadow = true
     pieceMesh.castShadow = true
 
-    const edgeGeometry = RoundedPlaneGeometry(
+    const edgeGeometry = new RoundedPlaneGeometry(
       pieceSize,
       edgeCornerRoundness,
       edgeDepth
