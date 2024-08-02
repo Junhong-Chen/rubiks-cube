@@ -11,6 +11,21 @@ export default class Cube {
     edgeScale: 0.85,
     edgeDepth: 0.001,
   }
+
+  get size() {
+    return this.#size
+  }
+
+  get data() {
+    const data = { names: [], positions: [], rotations: [] }
+    this.pieces.forEach(piece => {
+      data.names.push(piece.name)
+      data.positions.push(piece.position)
+      data.rotations.push(piece.rotation.toArray())
+    })
+    return data
+  }
+
   constructor(world) {
     this.world = world
     this.holder = new Object3D() // 控制浮动动画的的对象
@@ -29,7 +44,9 @@ export default class Cube {
     this.pieces = [] // 块 + 面
   }
 
-  init() {
+  init(size = 3) {
+    this.#size = size
+
     switch (this.#size) {
       case 2:
         this.#scale = 1.25
@@ -54,11 +71,22 @@ export default class Cube {
       if (node.frustumCulled) node.frustumCulled = false
     })
 
-    this.updateColors(this.world.themes.getColors())
-
-    this.sizeGenerated = this.#size
+    this.updateColors(this.world.themes.colors)
   }
 
+  resize(size, force = false) {
+    if (this.size !== size || force) {
+
+      this.size = size
+
+      this.reset()
+      this.init()
+
+      this.world.newGame = true
+      this.world.timer.reset()
+
+    }
+  }
 
   reset() {
     this.holder.rotation.set(0, 0, 0)
@@ -182,5 +210,19 @@ export default class Cube {
 
     this.pieces.forEach(piece => piece.userData.cube.material.color.setHex(colors.P))
     this.edges.forEach(edge => edge.material.color.setHex(colors[edge.name]))
+  }
+
+  loadFromData(data) {
+    this.pieces.forEach(piece => {
+
+      const index = data.names.indexOf(piece.name)
+
+      const position = data.positions[index]
+      const rotation = data.rotations[index]
+
+      piece.position.copy(position)
+      piece.rotation.fromArray(rotation)
+
+    })
   }
 }

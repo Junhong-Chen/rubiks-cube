@@ -1,6 +1,7 @@
 import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial, PlaneGeometry, DoubleSide, Quaternion, ArrowHelper, AxesHelper, ShaderMaterial, } from "three"
 import { Tween, Easing } from "../../utils/tween.js"
 import Draggable from "../../utils/draggable.js"
+import { STATE_TYPE } from "../../utils/store.js"
 
 const STATE = {
   STILL: 0,
@@ -324,9 +325,15 @@ export default class Controls {
       switch (flipType) {
         case RotateType.LAYER:
           this.rotateLayer(delta, false, layer => {
-            this.world.storage.saveGame()
             state = gettingDrag ? STATE.PREPARING : STATE.STILL
             gettingDrag = false
+
+            this.world.store.setState(STATE_TYPE.GAME, {
+              [this.world.cube.size]: {
+                cubeData: this.world.cube.data
+              }
+            })
+
             this.checkIsSolved()
           })
           break
@@ -517,7 +524,11 @@ export default class Controls {
         this.scrambleCube()
       } else {
         this.scramble = null
-        this.world.storage.saveGame()
+        this.world.store.setState(STATE_TYPE.GAME, {
+          [this.world.cube.size]: {
+            cubeData: this.world.cube.data
+          }
+        })
       }
     })
   }

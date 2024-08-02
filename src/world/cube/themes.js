@@ -1,9 +1,13 @@
 export default class Themes {
-  constructor(world) {
-    this.world = world
-    this.theme = null
 
-    this.defaults = {
+  get colors() {
+    return this.themes[this.theme]
+  }
+
+  constructor() {
+
+    this.theme = 'cube'
+    this.themes = {
       cube: {
         U: 0xfff7ff, // white
         D: 0xffef48, // yellow
@@ -56,26 +60,9 @@ export default class Themes {
       },
     }
 
-    this.colors = JSON.parse(JSON.stringify(this.defaults))
   }
 
-  getColors() {
-    return this.colors[this.theme]
-  }
-
-  setTheme(theme = false, force = false) {
-    if (theme === this.theme && force === false) return
-    if (theme !== false) this.theme = theme
-
-    const colors = this.getColors()
-
-    // this.world.dom.prefs.querySelectorAll('.range__handle div').forEach(range => {
-    //   range.style.background = '#' + colors.R.toString(16).padStart(6, '0')
-    // })
-    this.world.cube.updateColors(colors)
-
-    // this.world.confetti.updateColors(colors)
-
-    // this.world.dom.back.style.background = '#' + colors.G.toString(16).padStart(6, '0')
+  setTheme(theme) {
+    this.theme = theme
   }
 }

@@ -1,8 +1,9 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, MathUtils, PCFSoftShadowMap } from "three"
 import Sizes from "./utils/sizes"
 import Timer from "./utils/timer"
-import World from "./world/world"
 import Debugger from "./utils/debugger"
+import Store, { STATE_TYPE } from "./utils/store"
+import World from "./world/world"
 
 const $ = document.querySelector.bind(document)
 
@@ -17,6 +18,7 @@ class App {
     this.scene = new Scene()
     this.sizes = new Sizes()
     this.timer = new Timer()
+    this.store = new Store()
 
     this.dom = {
       ui: $('#ui'),
@@ -35,15 +37,15 @@ class App {
       buttons: {
         stats: $('.btn-stats'),
         prefs: $('.btn-prefs'),
-        theme: $('.btn-theme'),
+        // theme: $('.btn-theme'),
         back: $('.btn-back'),
-        reset: $('.btn-reset'),
+        // reset: $('.btn-reset'),
       }
     }
 
     const { width, height } = this.sizes
 
-    this.camera = new PerspectiveCamera(45, width / height, 0.1, 1000)
+    this.camera = new PerspectiveCamera(this.store.state[STATE_TYPE.PREFERENCES].cameraFov, width / height, 0.1, 1000)
 
     this.renderer = new WebGLRenderer({
       antialias: true
@@ -64,10 +66,12 @@ class App {
     this.world = new World(this)
 
     // debugger
-    const guiObj = {
-      logCamera: () => console.log(this.camera)
+    if (this.debugger.gui) {
+      const guiObj = {
+        logCamera: () => console.log(this.camera)
+      }
+      this.debugger.gui.add(guiObj, 'logCamera')
     }
-    this.debugger.gui.add(guiObj, 'logCamera')
   }
 
   update = ({ deltaTime }) => {

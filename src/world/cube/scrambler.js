@@ -15,7 +15,7 @@ export default class Scrambler {
 
     this.scrambleCount = {
       2: [7, 9, 11],
-      3: [2, 25, 30],
+      3: [20, 2, 30],
       4: [30, 40, 50],
       5: [40, 60, 80],
     }
@@ -65,8 +65,8 @@ export default class Scrambler {
 
   convertMove(move) {
     const [face, modifier] = move
-    const axes = { D: 'y', U: 'y', L: 'x', R: 'x', F: 'z', B: 'z' }
-    const rows = { D: -1, U: 1, L: -1, R: 1, F: 1, B: -1 }
+    const axes = { U: 'y', D: 'y', L: 'x', R: 'x', F: 'z', B: 'z' }
+    const rows = { U: 1, D: -1, L: -1, R: 1, F: 1, B: -1 }
 
     const axis = axes[face.toUpperCase()]
     let row = rows[face.toUpperCase()]

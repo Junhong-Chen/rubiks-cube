@@ -1,7 +1,7 @@
 {
-  "name": "three.js-template",
+  "name": "rubiks-cube",
   "version": "0.0.1",
-  "description": "three.js template",
+  "description": "Rubik's Cube",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

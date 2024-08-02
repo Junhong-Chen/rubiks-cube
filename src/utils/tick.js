@@ -1,4 +1,5 @@
 import { Animation } from "../utils/animation.js"
+import { STATE_TYPE } from "./store.js"
 
 export default class Tick extends Animation {
 
@@ -6,16 +7,14 @@ export default class Tick extends Animation {
     super(false)
 
     this.world = world
+    
+    this.ticking = false
+    this.startTime
+    this.currentTime
+    this.deltaTime
+    this.converted
 
     this.reset()
-  }
-
-  start(continueGame) {
-    this.startTime = continueGame ? (Date.now() - this.deltaTime) : Date.now()
-    this.deltaTime = 0
-    this.converted = this.convert()
-
-    super.start()
   }
 
   reset() {
@@ -25,14 +24,26 @@ export default class Tick extends Animation {
     this.converted = '00:00'
   }
 
+  start(continueGame) {
+    if (!this.ticking) {
+      this.ticking = true
+      this.startTime = continueGame ? (Date.now() - this.deltaTime) : Date.now()
+      this.deltaTime = 0
+      this.converted = this.convert()
+  
+      super.start()
+    }
+  }
+
   stop() {
-    this.currentTime = Date.now()
-    this.deltaTime = this.currentTime - this.startTime
-    this.convert()
-
-    super.stop()
-
-    return { time: this.converted, millis: this.deltaTime }
+    if (this.ticking) {
+      this.ticking = false
+      this.currentTime = Date.now()
+      this.deltaTime = this.currentTime - this.startTime
+      this.convert()
+  
+      super.stop()
+    }
   }
 
   update() {
@@ -42,9 +53,14 @@ export default class Tick extends Animation {
     this.deltaTime = this.currentTime - this.startTime
     this.convert()
 
-    if (this.converted != old) {
-      localStorage.setItem('theCube_time', this.deltaTime)
+    if (this.converted !== old) {
       this.setText()
+      
+      this.world.store.setState(STATE_TYPE.GAME, {
+        [this.world.cube.size]: {
+          time: this.deltaTime
+        }
+      })
     }
   }
 

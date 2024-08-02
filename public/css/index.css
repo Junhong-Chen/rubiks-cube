@@ -49,7 +49,7 @@
 }
 
 .stats-item:not(:last-child) {
-  margin-bottom: .8em;
+  margin-bottom: 1em;
 }
 
 .text,
@@ -108,7 +108,7 @@
 .text-best-time,
 .text-note {
   bottom: 8%;
-  font-size: 1.1em;
+  font-size: 1em;
   letter-spacing: .2em;
 }
 
@@ -142,6 +142,7 @@
   background-color: transparent;
   appearance: none;
   transform: translateY(1.5em);
+  cursor: pointer;
 }
 
 /* 扩大点击范围 */

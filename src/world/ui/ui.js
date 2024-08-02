@@ -1,7 +1,11 @@
-import { Tween, Easing } from "../utils/tween"
-import { SHOW, HIDE, START } from "../constants"
+import { Tween, Easing } from "../../utils/tween"
+import { SHOW, HIDE, START } from "../../constants"
 
 export default class UIController {
+
+  get cursor() {
+    return document.body.classList
+  }
 
   constructor(world) {
 
@@ -181,12 +185,13 @@ export default class UIController {
     this.activeTransitions++
 
     const text = best ? this.world.dom.texts.best : this.world.dom.texts.complete
-    if (visible === SHOW) text.classList.add(SHOW)
+    const duration = 3000
+    if (visible === SHOW) {
+      text.classList.add(SHOW)
+      setTimeout(() => text.classList.remove(SHOW), duration)
+    }
 
-    const duration = 500
-    if (visible === HIDE) setTimeout(() => this.world.dom.texts.tick.style.transform = '', duration)
-
-    setTimeout(() => this.activeTransitions--, duration)
+    setTimeout(() => this.activeTransitions--, duration / 2)
   }
 
   stats(visible) {
