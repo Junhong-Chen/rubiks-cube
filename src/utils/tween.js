@@ -75,6 +75,8 @@ export class Tween extends Animation {
     this.value = 0
     this.delta = 0
 
+    this.complete = false
+
     this.getFromTo(options)
 
     if (this.delay) setTimeout(() => super.start(), this.delay)
@@ -84,26 +86,29 @@ export class Tween extends Animation {
   }
 
   update(delta) {
-    const old = this.value * 1
+    const old = this.value
     const direction = (this.yoyo === true) ? - 1 : 1
 
     this.progress += (delta / this.duration) * direction
 
-    this.value = this.easing(this.progress)
-    this.delta = this.value - old
+    if (this.yoyo === null && this.progress > 1) {
+      this.progress = 1
+      this.value = 1
+      this.complete = true
+    } else {
+      this.value = this.easing(this.progress)
+    }
 
+    this.delta = this.value - old
+    this.onUpdate(this)
+    
     if (this.values !== null) this.updateFromTo()
 
     if (this.yoyo !== null) this.updateYoyo()
-    else if (this.progress <= 1) this.onUpdate(this)
-    else {
 
-      this.progress = 1
-      this.value = 1
-      this.onUpdate(this)
+    if (this.complete) {
       this.onComplete(this)
       super.stop()
-
     }
   }
 
@@ -128,10 +133,8 @@ export class Tween extends Animation {
 
   getFromTo(options) {
     if (!options.target || !options.to) {
-
       this.values = null
       return
-
     }
 
     this.target = options.target || null

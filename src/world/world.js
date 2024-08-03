@@ -218,10 +218,10 @@ export default class World {
       this.ui.zoom(STATE.MENU, 0)
       this.ui.float(START)
       this.ui.cursor.remove('grab')
-
+      this.ui.tick(HIDE)
+      
       this.controls.disable()
       this.tick.stop()
-      this.ui.tick(HIDE)
 
       this.light.switch(Light.SWITCH.TURNOFF, this.ui.durations.zoom)
 

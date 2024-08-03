@@ -136,18 +136,19 @@ export default class UIController {
 
     this.activeTransitions++
 
+    const { camera } = this.world
     const zoom = (play) ? 1 : this.data.cameraZoom
     const duration = (time > 0) ? Math.max(time, 1500) : 1500
     const rotations = (time > 0) ? Math.round(duration / 1500) : 1
     const easing = Easing.Power.InOut((time > 0) ? 2 : 3)
 
     this.tweens.zoom = new Tween({
-      target: this.world.camera,
+      target: camera,
       duration: duration,
       easing: easing,
-      from: { zoom: this.world.camera.zoom },
+      from: { zoom: camera.zoom },
       to: { zoom: zoom },
-      onUpdate: () => { this.world.camera.updateProjectionMatrix() },
+      onUpdate: () => { camera.updateProjectionMatrix() },
     })
 
     this.tweens.rotate = new Tween({

@@ -108,13 +108,17 @@
 .text-best-time,
 .text-note {
   bottom: 8%;
-  font-size: 1em;
+  font-size: 1.2em;
   letter-spacing: .2em;
 }
 
 .text-complete.show,
 .text-best-time.show {
   animation: 3s ease-in-out twinkle;
+}
+
+.text-note {
+  font-size: 1em;
 }
 
 .text-note.show {
@@ -135,14 +139,16 @@
 }
 
 .btn {
+  pointer-events: none;
+  cursor: pointer;
   opacity: 0;
-  border: 0;
-  font-size: 1.2em;
-  color: #ffffffaa;
-  background-color: transparent;
+  border: none;
+  outline: none;
   appearance: none;
   transform: translateY(1.5em);
-  cursor: pointer;
+  color: #ffffffaa;
+  background-color: transparent;
+  font-size: 1.2em;
 }
 
 /* 扩大点击范围 */
@@ -175,6 +181,7 @@
 .btn-prefs.show,
 .btn-theme.show,
 .btn-reset.show {
+  pointer-events: auto;
   animation: .5s ease-out forwards fade-in;
 }
 

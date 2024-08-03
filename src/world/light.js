@@ -36,7 +36,7 @@ export default class Light {
   switch(type, duration = 750) {
     if (type === this.type) return
     this.type = type
-    const easing = Easing.Power.InOut()
+    const easing = type === Light.SWITCH.TURNON ? Easing.Power.In() : Easing.Power.Out()
 
     switch (type) {
       case Light.SWITCH.TURNON:
@@ -52,7 +52,8 @@ export default class Light {
       case Light.SWITCH.TURNOFF:
         new Tween({
           easing,
-          duration,
+          delay: 200,
+          duration: duration - 200,
           onUpdate: tween => {
             this.pLight.intensity = (1 - tween.value) * 32
             this.pLight.angle = (1 - tween.value) * Math.PI / 8

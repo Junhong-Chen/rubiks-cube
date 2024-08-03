@@ -324,15 +324,17 @@ export default class Controls {
 
       switch (flipType) {
         case RotateType.LAYER:
-          this.rotateLayer(delta, false, layer => {
+          this.rotateLayer(delta, angle !== 0, this.flipConfig, layer => {
             state = gettingDrag ? STATE.PREPARING : STATE.STILL
             gettingDrag = false
 
-            this.world.store.setState(STATE_TYPE.GAME, {
-              [this.world.cube.size]: {
-                cubeData: this.world.cube.data
-              }
-            })
+            if (angle !== 0) {
+              this.world.store.setState(STATE_TYPE.GAME, {
+                [this.world.cube.size]: {
+                  cubeData: this.world.cube.data
+                }
+              })
+            }
 
             this.checkIsSolved()
           })
@@ -375,12 +377,11 @@ export default class Controls {
     return this.getMaxAxis(planeDirection)
   }
 
-  rotateLayer(rotation, scramble, callback) {
-    const config = scramble ? 0 : this.flipConfig
+  rotateLayer(rotation, move, flipConfig, callback) {
 
-    const easing = this.flipEasings[config]
-    const duration = this.flipSpeeds[config]
-    const bounce = (config == 2) ? this.bounceCube() : (() => { })
+    const easing = this.flipEasings[flipConfig]
+    const duration = this.flipSpeeds[flipConfig]
+    const bounce = (flipConfig === 2) ? this.bounceCube() : (() => { })
 
     new Tween({
       easing,
@@ -391,7 +392,7 @@ export default class Controls {
         bounce(tween.value, deltaAngle, rotation)
       },
       onComplete: () => {
-        if (!scramble) this.onLayerMove()
+        if (move) this.onLayerMove()
 
         const layer = this.flipLayer.slice(0)
 
@@ -518,7 +519,7 @@ export default class Controls {
     this.flipAxis[move.axis] = 1
 
     this.selectLayer(layer)
-    this.rotateLayer(move.angle, true, () => {
+    this.rotateLayer(move.angle, false, 0, () => {
 
       if (converted.length > 0) {
         this.scrambleCube()
