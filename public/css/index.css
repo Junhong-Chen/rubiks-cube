@@ -34,7 +34,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  translate: -50% -50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
@@ -126,9 +126,6 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.6em;
-}
-
-#prefs .range datalist option {
   font-weight: bold;
 }
 
@@ -151,17 +148,29 @@
 .text-best-time,
 .text-note {
   left: 50%;
-  translate: -50% 0;
+  transform: translate(-50%, 0);
 }
 
 .text-title,
 .text-tick {
   bottom: 80%;
-  font-size: 2.8em;
+  font-size: 2.5em;
+}
+
+.text-title i {
+  width: 1.4em;
+  height: 1.4em;
+  text-align: center;
+  border: 3px solid #ef3923;
+  border-radius: 0.2em;
+}
+
+.text-title.hide i {
+  opacity: 1;
 }
 
 .text-title i:last-child {
-  transform-origin: center bottom;
+  border-color: #41aac8;
 }
 
 .text-title.show i:first-child {
@@ -177,7 +186,7 @@
 }
 
 .text-title.hide i:last-child {
-  animation: .5s ease-in forwards rotate-crooked-out;
+  animation: .5s ease-in .1s forwards rotate-out;
 }
 
 .text-complete,
@@ -209,13 +218,16 @@
 
 .icon {
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
+  height: 1.2em;
 }
 
 .btn {
   pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3em;
+  height: 3em;
   cursor: pointer;
   opacity: 0;
   border: none;
@@ -224,32 +236,20 @@
   transform: translateY(1.5em);
   color: #ffffffaa;
   background-color: transparent;
-  font-size: 1.2em;
-}
-
-/* 扩大点击范围 */
-.btn::after {
-  position: absolute;
-  content: '';
-  width: 3em;
-  height: 3em;
-  left: 50%;
-  top: 50%;
-  margin-left: -1.5em;
-  margin-top: -1.5em;
+  font-size: 1em;
 }
 
 .btn-stats,
 .btn-back {
-  bottom: .8em;
-  left: .8em;
+  bottom: 0;
+  left: 0;
 }
 
 .btn-prefs,
 .btn-theme,
 .btn-reset {
-  bottom: .8em;
-  right: .8em;
+  bottom: 0;
+  right: 0;
 }
 
 .btn-stats.show,

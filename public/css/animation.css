@@ -50,35 +50,15 @@
   }
 
   50% {
-    transform: rotateZ(-7deg);
+    transform: rotateZ(45deg);
   }
 
-  80% {
-    transform: rotateZ(-21deg);
-  }
-
-  90% {
-    transform: rotateZ(-18deg);
+  85% {
+    transform: rotateZ(-12deg);
   }
 
   to {
-    transform: rotateZ(-21deg);
-  }
-}
-
-@keyframes rotate-crooked-out {
-  from {
-    opacity: 1;
-    transform: rotateY(0) rotateZ(-21deg);
-  }
-
-  75% {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 0;
-    transform: rotateY(90deg) rotateZ(0);
+    transform: rotateZ(0);
   }
 }
 

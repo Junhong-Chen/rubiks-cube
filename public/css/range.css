@@ -5,6 +5,7 @@
 
 .range input {
   appearance: none;
+  -webkit-appearance: none;
   width: 100%;
   height: 2px;
   border-radius: 0.1em;
@@ -13,6 +14,7 @@
 
 .range input::-webkit-slider-thumb {
   appearance: none;
+  -webkit-appearance: none;
   width: 1.8em;
   height: 1.8em;
   padding: 0;

@@ -12,11 +12,12 @@ export default class Debugger {
   }
 
   init() {
+    this.hashChange = this.hashChange.bind(this)
     this.hashChange() // first loaded
     window.addEventListener('hashchange', this.hashChange, false)
   }
 
-  hashChange = () => {
+  hashChange() {
     if (location.hash.includes('debug')) {
       this.#gui = new GUI()
     } else if (this.#gui) {

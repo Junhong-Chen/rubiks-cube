@@ -1,9 +1,10 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, MathUtils, PCFSoftShadowMap } from "three"
 import Sizes from "./utils/sizes"
 import Timer from "./utils/timer"
-import Debugger from "./utils/debugger"
+// import Debugger from "./utils/debugger"
 import Store, { STATE_TYPE } from "./utils/store"
 import World from "./world/world"
+import { isWebGL2Supported } from "./utils/utils"
 
 const $ = document.querySelector.bind(document)
 
@@ -14,7 +15,7 @@ class App {
   }
 
   init() {
-    this.debugger = new Debugger()
+    // this.debugger = new Debugger()
     this.scene = new Scene()
     this.sizes = new Sizes()
     this.timer = new Timer()
@@ -47,7 +48,16 @@ class App {
 
     this.camera = new PerspectiveCamera(this.store.state[STATE_TYPE.PREFERENCES].cameraFov, width / height, 0.1, 1000)
 
+    const canvas = $('#canvas')
+    let context
+    if (isWebGL2Supported()) {
+      context = canvas.getContext('webgl2')
+    } else {
+      context = canvas.getContext('webgl')
+    }
     this.renderer = new WebGLRenderer({
+      canvas,
+      context,
       antialias: true
     })
     this.renderer.shadowMap.enabled = true
@@ -57,30 +67,31 @@ class App {
     this.dom.canvas = this.renderer.domElement
 
     this.resize()
-    this.sizes.on('resize', this.resize)
+    this.sizes.on('resize', this.resize.bind(this))
 
-    this.timer.on('tick', this.update)
+    this.timer.on('tick', this.update.bind(this))
 
+    this.destroy = this.destroy.bind(this)
     window.addEventListener('beforeunload', this.destroy, false)
 
     this.world = new World(this)
 
     // debugger
-    if (this.debugger.gui) {
-      const guiObj = {
-        logCamera: () => console.log(this.camera)
-      }
-      this.debugger.gui.add(guiObj, 'logCamera')
-    }
+    // if (this.debugger.gui) {
+    //   const guiObj = {
+    //     logCamera: () => console.log(this.camera)
+    //   }
+    //   this.debugger.gui.add(guiObj, 'logCamera')
+    // }
   }
 
-  update = ({ deltaTime }) => {
+  update({ deltaTime }) {
     this.renderer.render(this.scene, this.camera)
 
     this.world.update(deltaTime)
   }
 
-  resize = () => {
+  resize() {
     const { width, height, pixelRatio } = this.sizes
     this.renderer.setSize(width, height)
     this.renderer.setPixelRatio(pixelRatio)
@@ -99,7 +110,7 @@ class App {
     document.documentElement.style.fontSize = docFontSize + 'px'
   }
 
-  destroy = (e) => {
+  destroy(e) {
     // e.preventDefault()
     this.sizes.off('resize')
     this.timer.off('tick')

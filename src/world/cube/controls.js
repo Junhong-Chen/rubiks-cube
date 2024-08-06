@@ -100,7 +100,7 @@ export default class Controls {
     // this.arrow = new ArrowHelper()
     // world.scene.add(this.arrow)
 
-    this.flipType = FLIP_TYPE.SWIFT
+    this.flipType
 
     this.flipEasings = [Easing.Power.Out(3), Easing.Sine.Out(), Easing.Back.Out(1.5)]
     this.flipSpeeds = [125, 200, 300]
@@ -165,14 +165,14 @@ export default class Controls {
         this.world.addUpdateFn(this.update)
       } else {
         this.world.removeUpdateFn(this.update)
+        this.world.cube.reset()
       }
     }
   }
 
   setFlipType(type) {
-    if (this.type !== type) {
+    if (this.flipType !== type) {
       this.flipType = type
-      this.world.cube.reset()
     }
   }
 

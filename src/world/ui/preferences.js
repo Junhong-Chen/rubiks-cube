@@ -35,9 +35,10 @@ document.querySelectorAll('range-slider').forEach(el => {
   input.setAttribute('max', max)
 
   list.forEach((value, i) => {
-    const item = document.createElement('option')
+    const item = document.createElement('li')
     item.setAttribute('value', i)
     item.setAttribute('label', value)
+    item.textContent = value
 
     item.classList.add(dataType)
 

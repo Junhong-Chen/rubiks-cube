@@ -20,6 +20,7 @@ export default class Sizes extends EventEmitter {
 
     this.updateSize()
 
+    this.resize = this.resize.bind(this)
     window.addEventListener('resize', this.resize, false)
   }
 
@@ -29,7 +30,7 @@ export default class Sizes extends EventEmitter {
     this.#pixelRatio = Math.min(window.devicePixelRatio, 2)
   }
 
-  resize = () => {
+  resize() {
     this.updateSize()
     this.emit('resize')
   }

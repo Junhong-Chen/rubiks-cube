@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
   <meta charset="UTF-8">
@@ -10,23 +10,23 @@
   <link rel="shortcut icon" href="/favicon.ico" media="(prefers-color-scheme: light)">
   <link rel="stylesheet" href="/css/index.css">
 
-  <meta name="keywords" content="rubiks,cube">
-  <meta name="description" content="A Rubik's Cube Game.">
+  <meta name="keywords" content="rubiks,cube,魔方,游戏">
+  <meta name="description" content="A Rubik's Cube Game. 魔方游戏">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Rubik's Cube">
-  <meta property="og:description" content="A Rubik's Cube Game.">
+  <meta property="og:title" content="Rubik's Cube,魔方">
+  <meta property="og:description" content="A Rubik's Cube Game. 魔方游戏">
 
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Rubik's Cube">
+  <meta name="apple-mobile-web-app-title" content="Rubik's Cube,魔方">
   <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 
 <body>
   <div id="ui">
-    <!-- <div id="loading-bar"></div> -->
-
-    <div id="cube"></div>
+    <div id="cube">
+      <canvas id="canvas"></canvas>
+    </div>
 
     <div id="stats">
       <div class="stats-item" name="cube-size">
@@ -51,16 +51,16 @@
 
     <div id="prefs" class="none">
       <range-slider name="size" title="魔方阶层" list="2,3,4,5" data-type="number"></range-slider>
-      <range-slider name="rotation" title="旋转类型" list="自由,固定" data-type="string"></range-slider>
+      <range-slider name="rotation" title="旋转视角" list="自由,固定" data-type="string"></range-slider>
       <range-slider name="flip" title="翻转类型" list="迅速,平滑,弹跳" data-type="string"></range-slider>
       <range-slider name="scramble" title="打乱次数" list="20,25,30" data-type="number"></range-slider>
-      <range-slider name="fov" title="相机视角" list="正交,透视" data-type="string" min="10" max="50"></range-slider>
+      <range-slider name="fov" title="相机视场" list="正交,透视" data-type="string" min="10" max="50"></range-slider>
     </div>
 
     <div id="texts">
       <h1 class="text text-title">
-        <i>魔</i>
-        <i>方</i>
+        <i><span>魔</span></i>
+        <i><span>方</span></i>
       </h1>
       <div class="text text-note">
         双击屏幕开始
