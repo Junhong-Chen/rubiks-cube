@@ -92,13 +92,12 @@ const _tempQuaternion = new Quaternion()
 export default class Controls {
 
   constructor(world) {
-    this.world = world
-
     // this.axes = new AxesHelper()
     // world.scene.add(this.axes)
-
+    
     // this.arrow = new ArrowHelper()
     // world.scene.add(this.arrow)
+    this.world = world
 
     this.flipType
 
@@ -145,7 +144,6 @@ export default class Controls {
     this.onLayerMove = () => { }
 
     this.initDraggable()
-
   }
 
   enable() {

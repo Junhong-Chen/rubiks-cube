@@ -135,7 +135,7 @@
 }
 
 .text-title i,
-.text-tick i,
+.text-tick span,
 .text-complete,
 .text-best-time,
 .text-note {
@@ -165,15 +165,12 @@
   border-radius: 0.2em;
 }
 
-.text-title.hide i {
-  opacity: 1;
-}
-
 .text-title i:last-child {
   border-color: #41aac8;
 }
 
-.text-title.show i:first-child {
+.text-title.show i,
+.text-tick.show span {
   animation: .5s ease-out forwards rotate-in;
 }
 
@@ -181,12 +178,80 @@
   animation: .5s ease-out .1s forwards rotate-in, .5s ease-in .7s forwards crooked;
 }
 
-.text-title.hide i:first-child {
+.text-title.hide i:nth-child(2) {
+  animation-delay: .1s;
+}
+
+.text-title.hide i,
+.text-tick.hide span {
+  opacity: 1;
   animation: .5s ease-in forwards rotate-out;
 }
 
-.text-title.hide i:last-child {
-  animation: .5s ease-in .1s forwards rotate-out;
+
+.text-tick span:nth-child(2) {
+  animation-delay: .05s;
+}
+
+.text-tick span:nth-child(3) {
+  animation-delay: .1s;
+}
+
+.text-tick span:nth-child(4) {
+  animation-delay: .15s;
+}
+
+.text-tick span:nth-child(5) {
+  animation-delay: .2s;
+}
+
+.text-tick span:nth-child(6) {
+  animation-delay: .25s;
+}
+
+.text-tick span:nth-child(7) {
+  animation-delay: .3s;
+}
+
+.text-tick span:nth-child(8) {
+  animation-delay: .35s;
+}
+
+.text-tick {
+  display: flex;
+  justify-content: space-between;
+  width: 5em;
+}
+
+.text-tick span {
+  position: relative;
+  width: .7em;
+}
+
+.text-tick span i {
+  width: 100%;
+}
+
+.text-tick span .above.hide {
+  animation: .5s ease-in forwards up-out;
+}
+
+.text-tick span .below.show {
+  animation: .5s ease-out forwards up-in;
+}
+
+
+.text-tick span i:first-child {
+  position: absolute;
+}
+
+.text-tick .split {
+  width: unset;
+}
+
+.text-tick span .below {
+  opacity: 0;
+  transform: translateY(-1.2em) scale(.5);
 }
 
 .text-complete,

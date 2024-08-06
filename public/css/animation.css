@@ -3,7 +3,8 @@
     opacity: 0;
   }
 
-  40%, 60% {
+  40%,
+  60% {
     opacity: 1;
   }
 
@@ -49,7 +50,8 @@
     transform: rotateZ(0deg);
   }
 
-  50% {
+  50%,
+  60% {
     transform: rotateZ(45deg);
   }
 
@@ -91,5 +93,29 @@
   to {
     opacity: 0;
     transform: translateY(1.5em);
+  }
+}
+
+@keyframes up-in {
+  from {
+    opacity: 0;
+    transform: translateY(-1.2em) scale(.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes up-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(1.2em) scale(.5);
   }
 }

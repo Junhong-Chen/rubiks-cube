@@ -12,7 +12,17 @@ export default class UIController {
     this.world = world
 
     this.tweens = {}
-    this.durations = {}
+    this.durations = {
+      cube: 1500,
+      zoom: 1500,
+      elevate: 1500,
+      complete: 1500,
+      stats: 1000,
+      preferences: 1000,
+      button: 500,
+      title: 500,
+      tick: 500
+    }
     this.data = {
       cubeY: -0.2,
       cameraZoom: 0.85,
@@ -44,10 +54,12 @@ export default class UIController {
   }
 
   buttons(show, hide) {
+    this.activeTransitions++
+
     if (hide.length) {
       hide.forEach(button => {
         button.classList.remove(SHOW)
-        setTimeout(() => button.classList.add(HIDE), null)
+        button.classList.add(HIDE)
       })
     }
 
@@ -55,11 +67,14 @@ export default class UIController {
       setTimeout(() => show.forEach(button => {
         button.classList.add(SHOW)
         button.classList.remove(HIDE)
-      }), 500)
+      }), this.durations.button)
     }
+    
+    setTimeout(() => this.activeTransitions--, this.durations.button)
+
   }
 
-  cube(visible, theming = false) {
+  cube(visible) {
 
     this.activeTransitions++
 
@@ -75,7 +90,7 @@ export default class UIController {
       onUpdate: tween => {
 
         this.world.cube.animator.position.y = show
-          ? (theming ? 0.9 + (1 - tween.value) * 3.5 : (1 - tween.value) * 4)
+          ? (1 - tween.value) * 4
           : currentY + tween.value * 4
 
         this.world.cube.animator.rotation.x = show
@@ -84,22 +99,6 @@ export default class UIController {
 
       },
     })
-
-    if (theming) {
-
-      if (show) {
-        this.world.camera.zoom = 0.75
-        this.world.camera.updateProjectionMatrix()
-      } else {
-        setTimeout(() => {
-          this.world.camera.zoom = this.data.cameraZoom
-          this.world.camera.updateProjectionMatrix()
-        }, 1500)
-      }
-
-    }
-
-    this.durations.cube = show ? 1500 : 1500
 
     setTimeout(() => this.activeTransitions--, this.durations.cube)
 
@@ -176,8 +175,6 @@ export default class UIController {
       to: { y: play ? -0.05 : this.data.cubeY }
     })
 
-    this.durations.elevate = 1500
-
     setTimeout(() => this.activeTransitions--, this.durations.elevate)
 
   }
@@ -186,46 +183,44 @@ export default class UIController {
     this.activeTransitions++
 
     const text = best ? this.world.dom.texts.best : this.world.dom.texts.complete
-    const duration = 3000
+
     if (visible === SHOW) {
       text.classList.add(SHOW)
-      setTimeout(() => text.classList.remove(SHOW), duration)
+      setTimeout(() => text.classList.remove(SHOW), this.durations.complete * 2)
     }
 
-    setTimeout(() => this.activeTransitions--, duration / 2)
+    setTimeout(() => this.activeTransitions--, this.durations.complete)
   }
 
   stats(visible) {
     this.activeTransitions++
 
-    const duration = 1000
     if (visible === SHOW) {
-      this.world.scores.calcStats()  
+      this.world.scores.calcStats()
       this.world.dom.stats.classList.remove(HIDE, NONE)
       this.world.dom.stats.classList.add(SHOW)
     } else {
       this.world.dom.stats.classList.remove(SHOW)
       this.world.dom.stats.classList.add(HIDE)
-      setTimeout(() => this.world.dom.stats.classList.add(NONE), duration)
+      setTimeout(() => this.world.dom.stats.classList.add(NONE), this.durations.stats)
     }
 
-    setTimeout(() => this.activeTransitions--, duration)
+    setTimeout(() => this.activeTransitions--, this.durations.stats)
   }
 
   preferences(visible) {
     this.activeTransitions++
 
-    const duration = 1000
     if (visible === SHOW) {
       this.world.dom.prefs.classList.remove(HIDE, NONE)
       this.world.dom.prefs.classList.add(SHOW)
     } else {
       this.world.dom.prefs.classList.remove(SHOW)
       this.world.dom.prefs.classList.add(HIDE)
-      setTimeout(() => this.world.dom.prefs.classList.add(NONE), duration)
+      setTimeout(() => this.world.dom.prefs.classList.add(NONE), this.durations.preferences)
     }
 
-    setTimeout(() => this.activeTransitions--, duration)
+    setTimeout(() => this.activeTransitions--, this.durations.preferences)
   }
 
   theming(visible) { }
@@ -245,10 +240,8 @@ export default class UIController {
       title.classList.remove(SHOW)
       note.style.opacity = window.getComputedStyle(note).opacity
       note.classList.remove(SHOW)
-      setTimeout(() => {
-        title.classList.add(HIDE)
-        note.classList.add(HIDE)
-      }, null)
+      title.classList.add(HIDE)
+      note.classList.add(HIDE)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.title)
@@ -260,64 +253,17 @@ export default class UIController {
     this.activeTransitions++
 
     const tick = this.world.dom.texts.tick
+    if (visible === SHOW) {
+      tick.classList.remove(HIDE)
+      tick.classList.add(SHOW)
+    } else {
+      tick.classList.remove(SHOW)
+      tick.classList.add(HIDE)
+    }
 
-    tick.style.opacity = 0
-    this.world.tick.convert()
-    this.world.tick.setText()
-
-    this.splitLetters(tick)
     const letters = tick.querySelectorAll('i')
-    this.flipLetters('tick', letters, visible === SHOW)
-
-    tick.style.opacity = 1
 
     setTimeout(() => this.activeTransitions--, this.durations.tick)
-
-  }
-
-  splitLetters(element) {
-
-    const text = element.innerHTML
-
-    element.innerHTML = ''
-
-    text.split('').forEach(letter => {
-
-      const i = document.createElement('i')
-
-      i.innerHTML = letter
-
-      element.appendChild(i)
-
-    })
-
-  }
-
-  flipLetters(type, letters, show) {
-
-    try { this.tweens[type].forEach(tween => tween.stop()) } catch (e) { }
-
-    letters.forEach((letter, index) => {
-
-      letter.style.opacity = show ? 0 : 1
-
-      this.tweens[type][index] = new Tween({
-        easing: Easing.Sine.Out(),
-        duration: show ? 800 : 400,
-        delay: index * 50,
-        onUpdate: tween => {
-
-          const rotation = show ? (1 - tween.value) * -80 : tween.value * 80
-
-          letter.style.transform = `rotate3d(0, 1, 0, ${rotation}deg)`
-          letter.style.opacity = show ? tween.value : (1 - tween.value)
-
-        },
-      })
-
-    })
-
-    this.durations[type] = (letters.length - 1) * 50 + (show ? 800 : 400)
 
   }
 }

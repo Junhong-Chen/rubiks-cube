@@ -4,7 +4,7 @@ import Timer from "./utils/timer"
 // import Debugger from "./utils/debugger"
 import Store, { STATE_TYPE } from "./utils/store"
 import World from "./world/world"
-import { isWebGL2Supported } from "./utils/utils"
+// import { isWebGL2Supported } from "./utils/utils"
 
 const $ = document.querySelector.bind(document)
 
@@ -48,18 +48,8 @@ class App {
 
     this.camera = new PerspectiveCamera(this.store.state[STATE_TYPE.PREFERENCES].cameraFov, width / height, 0.1, 1000)
 
-    const canvas = $('#canvas')
-    let context
-    if (isWebGL2Supported()) {
-      context = canvas.getContext('webgl2')
-    } else {
-      context = canvas.getContext('webgl')
-    }
-    this.renderer = new WebGLRenderer({
-      canvas,
-      context,
-      antialias: true
-    })
+
+    this.renderer = new WebGLRenderer({ antialias: true })
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = PCFSoftShadowMap
 

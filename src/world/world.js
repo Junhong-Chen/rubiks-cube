@@ -126,7 +126,7 @@ export default class World {
 
     const time = game[cubeSize].time
     if (time) {
-      this.tick.deltaTime = time
+      this.tick.setTime(time)
     } else {
       this.tick.reset()
     }
