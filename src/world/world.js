@@ -2,6 +2,7 @@ import Light from "./light"
 import Floor from "./floor"
 import UI from "./ui/ui"
 import Scores from "./ui/scores"
+import Preferences from "./ui/preferences"
 import Cube from './cube/cube'
 import Themes from "./cube/themes"
 import Scrambler from "./cube/scrambler"
@@ -38,6 +39,7 @@ function buttonConcatDom(buttons, dom) {
 export default class World {
   constructor(app) {
 
+    this.app = app
     this.dom = app.dom
     this.scene = app.scene
     this.sizes = app.sizes
@@ -54,6 +56,7 @@ export default class World {
     this.ui = new UI(this)
     this.tick = new Tick(this)
     this.scores = new Scores(this)
+    this.preferences = new Preferences()
 
     this.themes = new Themes(this)
     this.scrambler = new Scrambler(this)
@@ -61,9 +64,10 @@ export default class World {
 
 
     this.state = STATE.MENU
-    this.newGame = true
+    this.newGame
 
-    this.initComponentsState()
+    this.updateComponentsState(true)
+    this.ui.init()
     this.initActions()
 
     buttonConcatDom(BUTTONS, this.dom.buttons)
@@ -96,30 +100,39 @@ export default class World {
     }
   }
 
-  initComponentsState() {
+  updateComponentsState(resize = false) {
     const { game, scores, preferences } = this.store.state
-    const { cubeSize, controlsFlipConfig, scramblerDificulty, themesTheme } = preferences
+    const { cubeSize, controlsRotationType, controlsFlipType, scramblerDificulty, cameraFov } = preferences
 
-    this.scores.data = JSON.parse(JSON.stringify(scores))
-
-    this.controls.flipConfig = controlsFlipConfig
+    this.controls.setRotationType(controlsRotationType)
+    this.controls.setFlipType(controlsFlipType)
     this.scrambler.dificulty = scramblerDificulty
 
-    this.themes.setTheme(themesTheme)
+    if (this.camera.fov !== cameraFov) {
+      this.camera.fov = cameraFov
+      this.app.resize()
+    }
+    // this.themes.setTheme(themesTheme)
 
-    this.cube.init(cubeSize)
+    if (resize) this.cube.resize(cubeSize)
 
-    const cubeData = game[this.cube.size].cubeData
-    const time = game[this.cube.size].time
+    const cubeData = game[cubeSize].cubeData
     if (cubeData) {
       this.newGame = false
       this.cube.loadFromData(cubeData)
-    }
-    if (time) {
-      this.tick.deltaTime = time
+    } else {
+      this.newGame = true
     }
 
-    this.ui.init()
+    const time = game[cubeSize].time
+    if (time) {
+      this.tick.deltaTime = time
+    } else {
+      this.tick.reset()
+    }
+
+    this.scores.init(JSON.parse(JSON.stringify(scores)))
+    this.preferences.init(preferences)
   }
 
   initActions() {
@@ -219,7 +232,7 @@ export default class World {
       this.ui.float(START)
       this.ui.cursor.remove('grab')
       this.ui.tick(HIDE)
-      
+
       this.controls.disable()
       this.tick.stop()
 
@@ -229,32 +242,6 @@ export default class World {
 
       this.playing = false
       this.controls.disable()
-    }
-  }
-
-  prefs(visible) {
-    if (visible === SHOW) {
-      if (this.ui.activeTransitions > 0) return
-
-      this.state = STATE.PREFS
-
-      this.ui.buttons(BUTTONS.PREFS, BUTTONS.MENU)
-
-      this.ui.title(HIDE)
-      this.ui.cube(HIDE)
-
-      setTimeout(() => this.ui.preferences(SHOW), 1000)
-    } else {
-      this.cube.resize(this.store.state[STATE_TYPE.PREFERENCES].cubeSize)
-
-      this.state = STATE.MENU
-
-      this.ui.buttons(BUTTONS.MENU, BUTTONS.PREFS)
-
-      this.ui.preferences(HIDE)
-
-      setTimeout(() => this.ui.cube(SHOW), 500)
-      setTimeout(() => this.ui.title(SHOW), 1200)
     }
   }
 
@@ -281,6 +268,47 @@ export default class World {
       setTimeout(() => this.ui.title(SHOW), 1200)
     }
   }
+
+  prefs(visible) {
+    if (visible === SHOW) {
+      if (this.ui.activeTransitions > 0) return
+
+      this.state = STATE.PREFS
+
+      this.ui.buttons(BUTTONS.PREFS, BUTTONS.MENU)
+
+      this.ui.title(HIDE)
+      this.ui.cube(HIDE)
+
+      setTimeout(() => this.ui.preferences(SHOW), 1000)
+    } else {
+      const preferences = this.store.state[STATE_TYPE.PREFERENCES]
+      const _preferences = this.preferences.value
+      let changes = []
+      for (const key of Object.keys(preferences)) {
+        if (preferences[key] !== _preferences[key]) {
+          changes.push(key)
+          break
+        }
+      }
+      if (changes.length) {
+        this.store.setState(STATE_TYPE.PREFERENCES, _preferences)
+
+        this.updateComponentsState(changes.includes('cubeSize'))
+      }
+
+      this.state = STATE.MENU
+
+      this.ui.buttons(BUTTONS.MENU, BUTTONS.PREFS)
+
+      this.ui.preferences(HIDE)
+
+      setTimeout(() => this.ui.cube(SHOW), 500)
+      setTimeout(() => this.ui.title(SHOW), 1200)
+    }
+  }
+
+  theme() { }
 
   complete(visible) {
     this.newGame = true

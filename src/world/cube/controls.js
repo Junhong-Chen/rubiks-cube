@@ -10,9 +10,20 @@ const STATE = {
   ANIMATING: 3,
 }
 
-const RotateType = {
+const ROTATE_TARGET = {
   LAYER: 'layer',
   CUBE: 'cube'
+}
+
+const ROTATION_TYPE = {
+  FREE: 0,
+  FIXED: 1
+}
+
+const FLIP_TYPE = {
+  SWIFT: 0,
+  SMOOTH: 1,
+  BOUNCE: 2
 }
 
 const material = new MeshBasicMaterial({ visible: false, wireframe: true, side: DoubleSide, transparent: true, depthWrite: false, opacity: 0.5, toneMapped: false })
@@ -79,10 +90,6 @@ const _tempVector = new Vector3()
 const _tempQuaternion = new Quaternion()
 
 export default class Controls {
-  static TYPE = {
-    FREE: 'free',
-    FIXED: 'fixed'
-  }
 
   constructor(world) {
     this.world = world
@@ -93,7 +100,7 @@ export default class Controls {
     // this.arrow = new ArrowHelper()
     // world.scene.add(this.arrow)
 
-    this.flipConfig = 0
+    this.flipType = FLIP_TYPE.SWIFT
 
     this.flipEasings = [Easing.Power.Out(3), Easing.Sine.Out(), Easing.Back.Out(1.5)]
     this.flipSpeeds = [125, 200, 300]
@@ -118,8 +125,6 @@ export default class Controls {
     this.cubeHelper = new ControlsCube()
     this.world.scene.add(this.cubeHelper)
 
-    this.onSolved = () => { }
-    this.onLayerMove = () => { }
 
     this.momentum = []
 
@@ -127,6 +132,7 @@ export default class Controls {
     this.enabled = false
 
     // FREE 旋转类型参数
+    this.type
     this.acceleration = new Vector3() // 加速度
     this.rotationSpeed = 0.2 // 速度
     this.damping = 0.15 // 阻尼
@@ -134,7 +140,9 @@ export default class Controls {
     this.cameraDir = this.world.camera.position.clone().normalize()
 
     this.update = this.rotateCubeFree.bind(this)
-    this.setType(Controls.TYPE.FREE)
+
+    this.onSolved = () => { }
+    this.onLayerMove = () => { }
 
     this.initDraggable()
 
@@ -150,17 +158,26 @@ export default class Controls {
     this.enabled = false
   }
 
-  setType(type) {
-    this.type = type
-    if (this.type === Controls.TYPE.FREE) {
-      this.world.addUpdateFn(this.update)
-    } else {
-      this.world.removeUpdateFn(this.update)
+  setRotationType(type) {
+    if (this.type !== type) {
+      this.type = type
+      if (type === ROTATION_TYPE.FREE) {
+        this.world.addUpdateFn(this.update)
+      } else {
+        this.world.removeUpdateFn(this.update)
+      }
+    }
+  }
+
+  setFlipType(type) {
+    if (this.type !== type) {
+      this.flipType = type
+      this.world.cube.reset()
     }
   }
 
   initDraggable() {
-    this.draggable = new Draggable(document.body)
+    this.draggable = new Draggable(this.world.dom.ui, { allowTouchmoveElement: this.world.dom.prefs })
     let state = STATE.STILL, dragDistance = new Vector3()
     let gettingDrag, flipType, dragNormal, dragIntersect, flipAngle, planeCurrent, offsetCurrent, dragDirection
 
@@ -225,7 +242,7 @@ export default class Controls {
 
     // 层旋转准备
     const prepareLayerRotation = boxIntersect => {
-      flipType = RotateType.LAYER
+      flipType = ROTATE_TARGET.LAYER
 
       const object = boxIntersect.object
       dragNormal = object.userData.normal.clone()
@@ -238,7 +255,7 @@ export default class Controls {
 
     // 魔方旋转准备
     const prepareCubeRotation = () => {
-      flipType = RotateType.CUBE
+      flipType = ROTATE_TARGET.CUBE
 
       dragNormal = this.cameraDir
 
@@ -263,7 +280,7 @@ export default class Controls {
     // 计算旋转轴
     const calcAxis = position => {
       switch (flipType) {
-        case RotateType.LAYER: {
+        case ROTATE_TARGET.LAYER: {
           this.flipAxis = this.getFlipAxis(dragNormal, dragDistance.clone())
           dragDirection = this.getDragDirection(dragNormal, this.flipAxis.clone())
 
@@ -275,7 +292,7 @@ export default class Controls {
           this.selectLayer(layer)
           break
         }
-        case RotateType.CUBE:
+        case ROTATE_TARGET.CUBE:
           dragDirection = this.getMaxAxis(dragDistance)
 
           const axis = dragDirection === 'x' ? 'y' : position.current.x > 0 ? 'z' : 'x'
@@ -294,17 +311,17 @@ export default class Controls {
       const rotation = dragDelta[dragDirection]
 
       switch (flipType) {
-        case RotateType.LAYER:
+        case ROTATE_TARGET.LAYER:
           this.group.rotateOnAxis(this.flipAxis, rotation)
           flipAngle += rotation
           break
-        case RotateType.CUBE:
+        case ROTATE_TARGET.CUBE:
           switch (this.type) {
-            case Controls.TYPE.FREE:
+            case ROTATION_TYPE.FREE:
               this.acceleration.x -= dragDelta.x
               this.acceleration.y -= dragDelta.y
               break
-            case Controls.TYPE.FIXED:
+            case ROTATION_TYPE.FIXED:
               this.cubeHelper.rotateOnWorldAxis(this.flipAxis, rotation)
               this.world.cube.object.rotation.copy(this.cubeHelper.rotation)
               flipAngle += rotation
@@ -323,8 +340,8 @@ export default class Controls {
       const delta = angle - flipAngle
 
       switch (flipType) {
-        case RotateType.LAYER:
-          this.rotateLayer(delta, angle !== 0, this.flipConfig, layer => {
+        case ROTATE_TARGET.LAYER:
+          this.rotateLayer(delta, angle !== 0, this.flipType, layer => {
             state = gettingDrag ? STATE.PREPARING : STATE.STILL
             gettingDrag = false
 
@@ -339,10 +356,10 @@ export default class Controls {
             this.checkIsSolved()
           })
           break
-        case RotateType.CUBE:
+        case ROTATE_TARGET.CUBE:
           state = gettingDrag ? STATE.PREPARING : STATE.STILL
 
-          if (this.type === Controls.TYPE.FIXED) {
+          if (this.type === ROTATION_TYPE.FIXED) {
             this.rotateCubeFixed(delta, () => {
               state = gettingDrag ? STATE.PREPARING : STATE.STILL
               gettingDrag = false
@@ -377,11 +394,11 @@ export default class Controls {
     return this.getMaxAxis(planeDirection)
   }
 
-  rotateLayer(rotation, move, flipConfig, callback) {
+  rotateLayer(rotation, move, flipType, callback) {
 
-    const easing = this.flipEasings[flipConfig]
-    const duration = this.flipSpeeds[flipConfig]
-    const bounce = (flipConfig === 2) ? this.bounceCube() : (() => { })
+    const easing = this.flipEasings[flipType]
+    const duration = this.flipSpeeds[flipType]
+    const bounce = (flipType === 2) ? this.bounceCube() : (() => { })
 
     new Tween({
       easing,
@@ -439,7 +456,7 @@ export default class Controls {
   }
 
   rotateCubeFixed(rotation, callback) {
-    const config = this.flipConfig
+    const config = this.flipType
     const easing = [Easing.Power.Out(4), Easing.Sine.Out(), Easing.Back.Out(2)][config]
     const duration = [100, 150, 350][config]
 

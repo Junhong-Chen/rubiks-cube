@@ -3,7 +3,7 @@ import { RoundedBoxGeometry, RoundedPlaneGeometry } from "./geometry.js"
 import { CUBE_DIRECTION } from "../../constants.js"
 
 export default class Cube {
-  #size = 3 // 阶层
+  #size // 阶层
   #scale = 1
   #gemotry = {
     pieceCornerRadius: 0.12,
@@ -44,9 +44,7 @@ export default class Cube {
     this.pieces = [] // 块 + 面
   }
 
-  init(size = 3) {
-    this.#size = size
-
+  init() {
     switch (this.#size) {
       case 2:
         this.#scale = 1.25
@@ -62,6 +60,9 @@ export default class Cube {
     this.generatePositions()
     this.generateModel()
 
+    this.cubes.length = 0
+    this.object.children.length = 0
+    this.object.add(this.world.controls.group)
     this.pieces.forEach(piece => {
       this.cubes.push(piece.userData.cube)
       this.object.add(piece)
@@ -75,16 +76,12 @@ export default class Cube {
   }
 
   resize(size, force = false) {
-    if (this.size !== size || force) {
+    if (this.#size !== size || force) {
 
-      this.size = size
+      this.#size = size
 
       this.reset()
       this.init()
-
-      this.world.newGame = true
-      this.world.timer.reset()
-
     }
   }
 
@@ -127,6 +124,10 @@ export default class Cube {
   }
 
   generateModel() {
+    // 清空数组
+    this.pieces.length = 0
+    this.edges.length = 0
+
     const pieceSize = 1 / 3
 
     const material = new MeshStandardMaterial({

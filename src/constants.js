@@ -67,8 +67,19 @@ export const CUBE_PRESET = {
 // 魔方六个面的方位
 export const CUBE_DIRECTION = ['L', 'R', 'D', 'U', 'B', 'F']
 
+export const CUBE_SIZES = [2, 3, 4, 5]
+
+export const SCRAMBLE_COUNT = {
+  2: [7, 13, 17],
+  3: [20, 25, 30],
+  4: [30, 40, 50],
+  5: [40, 60, 80],
+}
+
 export const SHOW = 'show'
 export const HIDE = 'hide'
+export const NONE = 'none'
 
 export const START = true
 export const STOP = false
+

@@ -1,4 +1,5 @@
 import { Vector3 } from "three"
+import { SCRAMBLE_COUNT } from "../../constants"
 
 const FACES = {
   SMALL: 'UDLRFB',
@@ -13,13 +14,6 @@ export default class Scrambler {
 
     this.dificulty = 0
 
-    this.scrambleCount = {
-      2: [7, 9, 11],
-      3: [20, 2, 30],
-      4: [30, 40, 50],
-      5: [40, 60, 80],
-    }
-
     this.conveted = []
   }
 
@@ -28,7 +22,7 @@ export default class Scrambler {
     const { size } = this.world.cube
 
     if (moves.length < 1) {
-      const scrambleCount = this.scrambleCount[size][this.dificulty]
+      const scrambleCount = SCRAMBLE_COUNT[size][this.dificulty]
 
       const faces = size < 4 ? FACES.SMALL : FACES.LARGE
       const total = scramble === undefined ? scrambleCount : scramble

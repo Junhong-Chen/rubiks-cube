@@ -8,6 +8,10 @@ export default class Scores {
     this.data = null
   }
 
+  init(data) {
+    this.data = data
+  }
+
   addScore(time) {
 
     const data = this.data[this.world.cube.size]
@@ -47,7 +51,7 @@ export default class Scores {
     this.setStats('game-time', this.convertTime(totalTime))
     this.setStats('best-time', this.convertTime(data.best))
     this.setStats('worst-time', this.convertTime(data.worst))
-    this.setStats('average-time', this.convertTime(totalTime / data.scores.length))
+    this.setStats('average-time', this.convertTime(data.scores.length ? totalTime / data.scores.length : 0))
 
   }
 

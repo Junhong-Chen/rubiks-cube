@@ -1,5 +1,5 @@
 import { Tween, Easing } from "../../utils/tween"
-import { SHOW, HIDE, START } from "../../constants"
+import { SHOW, HIDE, NONE, START } from "../../constants"
 
 export default class UIController {
 
@@ -196,163 +196,39 @@ export default class UIController {
   }
 
   stats(visible) {
-    const show = visible === SHOW
-    if (show) this.world.scores.calcStats()
-
     this.activeTransitions++
 
-    this.tweens.stats.forEach(tween => { tween.stop(); tween = null })
+    const duration = 1000
+    if (visible === SHOW) {
+      this.world.scores.calcStats()  
+      this.world.dom.stats.classList.remove(HIDE, NONE)
+      this.world.dom.stats.classList.add(SHOW)
+    } else {
+      this.world.dom.stats.classList.remove(SHOW)
+      this.world.dom.stats.classList.add(HIDE)
+      setTimeout(() => this.world.dom.stats.classList.add(NONE), duration)
+    }
 
-    let tweenId = -1
-
-    const stats = this.world.dom.stats.querySelectorAll('.stats-item')
-    const easing = show ? Easing.Power.Out(2) : Easing.Power.In(3)
-
-    stats.forEach((stat, index) => {
-
-      const delay = index * (show ? 80 : 60)
-
-      this.tweens.stats[tweenId++] = new Tween({
-        delay: delay,
-        duration: 400,
-        easing: easing,
-        onUpdate: tween => {
-
-          const translate = show ? (1 - tween.value) * 2 : tween.value
-          const opacity = show ? tween.value : (1 - tween.value)
-
-          stat.style.transform = `translate3d(0, ${translate}em, 0)`
-          stat.style.opacity = opacity
-
-        }
-      })
-
-    })
-
-    this.durations.stats = 0
-
-    setTimeout(() => this.activeTransitions--, this.durations.stats)
-
+    setTimeout(() => this.activeTransitions--, duration)
   }
 
   preferences(visible) {
-
-    this.ranges(this.world.dom.prefs.querySelectorAll('.range'), 'prefs', visible === SHOW)
-
-  }
-
-  theming(visible) {
-
-    this.ranges(this.world.dom.theme.querySelectorAll('.range'), 'prefs', visible === SHOW)
-
-  }
-
-  ranges(ranges, type, show) {
-
     this.activeTransitions++
 
-    this.tweens[type].forEach(tween => { tween.stop(); tween = null })
+    const duration = 1000
+    if (visible === SHOW) {
+      this.world.dom.prefs.classList.remove(HIDE, NONE)
+      this.world.dom.prefs.classList.add(SHOW)
+    } else {
+      this.world.dom.prefs.classList.remove(SHOW)
+      this.world.dom.prefs.classList.add(HIDE)
+      setTimeout(() => this.world.dom.prefs.classList.add(NONE), duration)
+    }
 
-    const easing = show ? Easing.Power.Out(2) : Easing.Power.In(3)
-
-    let tweenId = -1
-    let listMax = 0
-
-    ranges.forEach((range, rangeIndex) => {
-
-      const label = range.querySelector('.range__label')
-      const track = range.querySelector('.range__track-line')
-      const handle = range.querySelector('.range__handle')
-      const list = range.querySelectorAll('.range__list div')
-
-      const delay = rangeIndex * (show ? 120 : 100)
-
-      label.style.opacity = show ? 0 : 1
-      track.style.opacity = show ? 0 : 1
-      handle.style.opacity = show ? 0 : 1
-      handle.style.pointerEvents = show ? 'all' : 'none'
-
-      this.tweens[type][tweenId++] = new Tween({
-        delay: show ? delay : delay,
-        duration: 400,
-        easing: easing,
-        onUpdate: tween => {
-
-          const translate = show ? (1 - tween.value) : tween.value
-          const opacity = show ? tween.value : (1 - tween.value)
-
-          label.style.transform = `translate3d(0, ${translate}em, 0)`
-          label.style.opacity = opacity
-
-        }
-      })
-
-      this.tweens[type][tweenId++] = new Tween({
-        delay: show ? delay + 100 : delay,
-        duration: 400,
-        easing: easing,
-        onUpdate: tween => {
-
-          const translate = show ? (1 - tween.value) : tween.value
-          const scale = show ? tween.value : (1 - tween.value)
-          const opacity = scale
-
-          track.style.transform = `translate3d(0, ${translate}em, 0) scale3d(${scale}, 1, 1)`
-          track.style.opacity = opacity
-
-        }
-      })
-
-      this.tweens[type][tweenId++] = new Tween({
-        delay: show ? delay + 100 : delay,
-        duration: 400,
-        easing: easing,
-        onUpdate: tween => {
-
-          const translate = show ? (1 - tween.value) : tween.value
-          const opacity = 1 - translate
-          const scale = 0.5 + opacity * 0.5
-
-          handle.style.transform = `translate3d(0, ${translate}em, 0) scale3d(${scale}, ${scale}, ${scale})`
-          handle.style.opacity = opacity
-
-        }
-      })
-
-      list.forEach((listItem, labelIndex) => {
-
-        listItem.style.opacity = show ? 0 : 1
-
-        this.tweens[type][tweenId++] = new Tween({
-          delay: show ? delay + 200 + labelIndex * 50 : delay,
-          duration: 400,
-          easing: easing,
-          onUpdate: tween => {
-
-            const translate = show ? (1 - tween.value) : tween.value
-            const opacity = show ? tween.value : (1 - tween.value)
-
-            listItem.style.transform = `translate3d(0, ${translate}em, 0)`
-            listItem.style.opacity = opacity
-
-          }
-        })
-
-      })
-
-      listMax = list.length > listMax ? list.length - 1 : listMax
-
-      range.style.opacity = 1
-
-    })
-
-    this.durations[type] = show
-      ? ((ranges.length - 1) * 100) + 200 + listMax * 50 + 400
-      : ((ranges.length - 1) * 100) + 400
-
-    setTimeout(() => this.activeTransitions--, this.durations[type])
-
+    setTimeout(() => this.activeTransitions--, duration)
   }
+
+  theming(visible) { }
 
   title(visible) {
     this.activeTransitions++

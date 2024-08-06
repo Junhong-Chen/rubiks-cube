@@ -1,7 +1,5 @@
 import { Vector2 } from "three"
 
-document.addEventListener('touchmove', event => { event.preventDefault() }, { passive: false })
-
 export default class Draggable {
 
   constructor(element, options = {}) {
@@ -16,6 +14,7 @@ export default class Draggable {
 
     this.options = Object.assign({
       calcDelta: false,
+      allowTouchmoveElement: null, // 用于指定允许 touchmove 的元素
     }, options)
 
     this.element = element
@@ -70,6 +69,15 @@ export default class Draggable {
     this.onDragEnd = () => { }
 
     this.enable()
+
+    // 全局 touchmove 事件处理程序
+    document.addEventListener('touchmove', event => {
+      if (this.options.allowTouchmoveElement && 
+          this.options.allowTouchmoveElement.contains(event.target)) {
+        return; // 允许特定元素内的 touchmove 事件
+      }
+      event.preventDefault();
+    }, { passive: false });
 
     return this
   }

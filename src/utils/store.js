@@ -86,10 +86,11 @@ export default class Store {
       },
       [STATE_TYPE.PREFERENCES]: {
         cubeSize: 3,
-        cameraFov: 30,
-        controlsFlipConfig: 1,
+        controlsRotationType: 0,
+        controlsFlipType: 1,
         scramblerDificulty: 1,
-        themesTheme: 'cube',
+        cameraFov: 30,
+        // themesTheme: 'cube',
       }
     }
 

@@ -1,5 +1,6 @@
 @import "common.css";
 @import "animation.css";
+@import "range.css";
 
 #loading-bar {
   position: absolute;
@@ -28,7 +29,8 @@
   height: 0;
 }
 
-#stats {
+#stats,
+#prefs {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -38,6 +40,51 @@
   justify-content: center;
   align-items: center;
   width: 14em;
+}
+
+#stats.show>div,
+#prefs.show>div {
+  animation: .5s ease-out forwards fade-in;
+}
+
+#stats.show>div:nth-child(2),
+#prefs.show>div:nth-child(2),
+#stats.hide>div:nth-last-child(2),
+#prefs.hide>div:nth-last-child(2) {
+  animation-delay: .1s;
+}
+
+#stats.show>div:nth-child(3),
+#prefs.show>div:nth-child(3),
+#stats.hide>div:nth-last-child(3),
+#prefs.hide>div:nth-last-child(3) {
+  animation-delay: .2s;
+}
+
+#stats.show>div:nth-child(4),
+#prefs.show>div:nth-child(4),
+#stats.hide>div:nth-last-child(4),
+#prefs.hide>div:nth-last-child(4) {
+  animation-delay: .3s;
+}
+
+#stats.show>div:nth-child(5),
+#prefs.show>div:nth-child(5),
+#stats.hide>div:nth-last-child(5),
+#prefs.hide>div:nth-last-child(5) {
+  animation-delay: .4s;
+}
+
+#stats.show>div:nth-child(6),
+#prefs.show>div:nth-child(6),
+#stats.hide>div:nth-last-child(6),
+#prefs.hide>div:nth-last-child(6) {
+  animation-delay: .5s;
+}
+
+#stats.hide>div,
+#prefs.hide>div {
+  animation: .5s ease-in forwards fade-out;
 }
 
 .stats-item {
@@ -50,6 +97,39 @@
 
 .stats-item:not(:last-child) {
   margin-bottom: 1em;
+}
+
+#prefs .range {
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 3.6em;
+}
+
+#prefs.hide .range,
+#stats.hide .stats-item {
+  opacity: 1;
+}
+
+#prefs .range:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+#prefs .range label {
+  font-size: .9em;
+  font-weight: bold;
+}
+
+#prefs .range datalist {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6em;
+}
+
+#prefs .range datalist option {
+  font-weight: bold;
 }
 
 .text,
@@ -74,7 +154,8 @@
   translate: -50% 0;
 }
 
-.text-title {
+.text-title,
+.text-tick {
   bottom: 80%;
   font-size: 2.8em;
 }
@@ -97,11 +178,6 @@
 
 .text-title.hide i:last-child {
   animation: .5s ease-in forwards rotate-crooked-out;
-}
-
-.text-tick {
-  bottom: 80%;
-  font-size: 3em;
 }
 
 .text-complete,
