@@ -1,11 +1,17 @@
 :root {
   --color-white: #ddd;
   --color-black: black;
-}
+  --color-red: #ef3923;
+  --color-yellow: #ffef48;
+  --color-blue: #41aac8;
+  --color-green: #82ca38;
+  --color-orange: #ff8c0a;
 
-html {
-  -webkit-overflow-scrolling: touch;
-  overflow: hidden;
+  --color-red-dark: #cf1e1e;
+  --color-yellow-dark: #c9bc31;
+  --color-blue-dark: #378aa1;
+  --color-green-dark: #6ca82f;
+  --color-orange-dark: #d87809;
 }
 
 html,
@@ -13,8 +19,14 @@ body {
   padding: 0;
   margin: 0;
   color: var(--color-white);
-  user-select: none;
   font-size: 5em;
+  overflow: hidden;
+  touch-action: manipulation; /* 或者 touch-action: none; 根据具体需求选择 */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1,
@@ -29,6 +41,18 @@ i {
 
 li {
   list-style: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.hide {
+  pointer-events: none;
 }
 
 .number {

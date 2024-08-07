@@ -10,6 +10,23 @@ const $ = document.querySelector.bind(document)
 
 const stage = { width: 2, height: 3, aspect: 2 / 3 }
 
+// 禁用双指缩放
+document.addEventListener('touchmove', (event) => {
+  if (event.touches.length > 1) {
+    event.preventDefault()
+  }
+}, { passive: false })
+
+// 禁用双击放大
+document.addEventListener('dblclick', (event) => {
+  event.preventDefault()
+}, false);
+
+// 禁用双指缩放和双击放大
+document.addEventListener('gesturestart', (event) => {
+  event.preventDefault()
+}, false)
+
 class App {
   constructor() {
   }
@@ -40,7 +57,7 @@ class App {
         prefs: $('.btn-prefs'),
         // theme: $('.btn-theme'),
         back: $('.btn-back'),
-        // reset: $('.btn-reset'),
+        reset: $('.btn-reset'),
       }
     }
 

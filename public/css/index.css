@@ -42,6 +42,7 @@
   width: 14em;
 }
 
+/* 统计、设置 */
 #stats.show>div,
 #prefs.show>div {
   animation: .5s ease-out forwards fade-in;
@@ -129,12 +130,13 @@
   font-weight: bold;
 }
 
+/* 文本 */
 .text,
 .btn {
   position: fixed;
 }
 
-.text-title i,
+.text-title span,
 .text-tick span,
 .text-complete,
 .text-best-time,
@@ -154,41 +156,59 @@
 .text-title,
 .text-tick {
   bottom: 80%;
-  font-size: 2.5em;
+  font-size: 2.2em;
 }
 
-.text-title i {
+/* 标题 */
+.text-title span:first-child {
+  display: inline-block;
+  outline: 7px solid var(--color-red);
+}
+
+.text-title span:last-child {
+  display: inline-block;
+  margin-left: 0.4em;
+  outline: 7px solid var(--color-blue);
+}
+
+.text-title span i {
   width: 1.4em;
   height: 1.4em;
   text-align: center;
-  border: 3px solid #ef3923;
   border-radius: 0.2em;
+  /* p = (√2 - 1)r; r = 0.2 => p = 0.0828 */
 }
 
-.text-title i:last-child {
-  border-color: #41aac8;
+.text-title span:first-child i {
+  box-shadow: 0 0 0 0.0828em var(--color-red);
+  outline: 6px solid var(--color-red);
 }
 
-.text-title.show i,
+.text-title span:last-child i {
+  box-shadow: 0 0 0 0.0828em var(--color-blue);
+  outline: 6px solid var(--color-blue);
+}
+
+.text-title.show span,
 .text-tick.show span {
   animation: .5s ease-out forwards rotate-in;
 }
 
-.text-title.show i:last-child {
-  animation: .5s ease-out .1s forwards rotate-in, .5s ease-in .7s forwards crooked;
+.text-title.show span:last-child {
+  animation: .5s ease-out .1s forwards rotate-in, .5s ease-in-out .8s forwards crooked;
 }
 
-.text-title.hide i:nth-child(2) {
+.text-title.hide span:nth-child(2) {
   animation-delay: .1s;
 }
 
-.text-title.hide i,
+.text-title.hide span,
 .text-tick.hide span {
   opacity: 1;
   animation: .5s ease-in forwards rotate-out;
 }
 
-
+/* 计时器 */
 .text-tick span:nth-child(2) {
   animation-delay: .05s;
 }
@@ -230,6 +250,7 @@
 
 .text-tick span i {
   width: 100%;
+  text-align: center;
 }
 
 .text-tick span .above.hide {
@@ -254,6 +275,7 @@
   transform: translateY(-1.2em) scale(.5);
 }
 
+/* 提示 */
 .text-complete,
 .text-best-time,
 .text-note {
@@ -272,7 +294,7 @@
 }
 
 .text-note.show {
-  animation: 2s ease-in-out infinite twinkle;
+  animation: 3s ease-in-out infinite twinkle;
 }
 
 .text-note.hide {
@@ -281,23 +303,19 @@
   will-change: opacity;
 }
 
+/* 按键 */
 .icon {
   display: inline-block;
   height: 1.2em;
 }
 
 .btn {
-  pointer-events: none;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 3em;
   height: 3em;
-  cursor: pointer;
   opacity: 0;
-  border: none;
-  outline: none;
-  appearance: none;
   transform: translateY(1.5em);
   color: #ffffffaa;
   background-color: transparent;

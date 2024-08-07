@@ -3,8 +3,8 @@
     opacity: 0;
   }
 
-  40%,
-  60% {
+  30%,
+  70% {
     opacity: 1;
   }
 
@@ -47,16 +47,19 @@
 
 @keyframes crooked {
   from {
-    transform: rotateZ(0deg);
+    transform: rotateZ(0);
   }
 
-  50%,
-  60% {
+  50% {
     transform: rotateZ(45deg);
   }
 
   85% {
-    transform: rotateZ(-12deg);
+    transform: rotateZ(-15deg);
+  }
+
+  95% {
+    transform: rotateZ(-5deg);
   }
 
   to {

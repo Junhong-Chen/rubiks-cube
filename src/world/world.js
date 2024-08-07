@@ -9,7 +9,7 @@ import Scrambler from "./cube/scrambler"
 import Controls from "./cube/controls"
 import Tick from "../utils/tick"
 import { STATE_TYPE } from "../utils/store"
-import { SHOW, HIDE, START, STOP } from "../constants"
+import { SHOW, HIDE, START, STOP, ROTATION_TYPE } from "../constants"
 
 const STATE = {
   MENU: 0,
@@ -22,7 +22,7 @@ const STATE = {
 
 const BUTTONS = {
   MENU: ['stats', 'prefs'],
-  PLAYING: ['back'],
+  PLAYING: ['back', 'reset'],
   COMPLETE: [],
   STATS: [],
   PREFS: ['back'],
@@ -138,7 +138,10 @@ export default class World {
   initActions() {
     let tappedTwice = false
 
-    this.dom.ui.addEventListener('click', event => {
+    this.dom.ui.addEventListener('pointerdown', event => {
+      if (event.buttons.length > 1) {
+        event.preventDefault()
+      }
 
       if (this.ui.activeTransitions > 0) return
       if (this.state === STATE.PLAYING) return
@@ -179,6 +182,9 @@ export default class World {
           break
       }
     }
+
+    // 重置魔方位置
+    this.dom.buttons.reset.onclick = () => this.ui.reset()
 
     // 统计
     this.dom.buttons.stats.onclick = () => this.stats(SHOW)
@@ -237,6 +243,10 @@ export default class World {
       this.tick.stop()
 
       this.light.switch(Light.SWITCH.TURNOFF, this.ui.durations.zoom)
+
+      if (this.store.state[STATE_TYPE.PREFERENCES].controlsRotationType === ROTATION_TYPE.FREE) {
+        this.ui.reset()
+      }
 
       setTimeout(() => this.ui.title(SHOW), this.ui.durations.zoom - 1000)
 
@@ -344,13 +354,12 @@ export default class World {
     } else {
       this.state = STATE.STATS
 
-      this.ui.tick(HIDE)
-      // this.ui.complete(HIDE, this.bestTime)
       this.ui.cube(HIDE)
-      this.tick.reset()
+      this.ui.tick(HIDE)
 
       setTimeout(() => {
         this.cube.reset()
+        this.tick.reset()
         // this.confetti.stop()
 
         this.ui.stats(SHOW)

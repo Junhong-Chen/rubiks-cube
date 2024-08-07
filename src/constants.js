@@ -83,3 +83,14 @@ export const NONE = 'none'
 export const START = true
 export const STOP = false
 
+export const ROTATION_TYPE = {
+  FREE: 0,
+  FIXED: 1
+}
+
+export const FLIP_TYPE = {
+  SWIFT: 0,
+  SMOOTH: 1,
+  BOUNCE: 2
+}
+

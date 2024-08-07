@@ -15,6 +15,7 @@ export default class UIController {
     this.durations = {
       cube: 1500,
       zoom: 1500,
+      reset: 500,
       elevate: 1500,
       complete: 1500,
       stats: 1000,
@@ -69,13 +70,12 @@ export default class UIController {
         button.classList.remove(HIDE)
       }), this.durations.button)
     }
-    
+
     setTimeout(() => this.activeTransitions--, this.durations.button)
 
   }
 
   cube(visible) {
-
     this.activeTransitions++
 
     try { this.tweens.cube.stop() } catch (e) { }
@@ -101,7 +101,30 @@ export default class UIController {
     })
 
     setTimeout(() => this.activeTransitions--, this.durations.cube)
+  }
 
+  reset() {
+    if (this.tweens.reset) return
+
+    this.activeTransitions++
+
+    const target = this.world.cube.object
+    const { x, y, z } = target.rotation
+
+    this.tweens.reset = new Tween({
+      target,
+      duration: this.durations.reset,
+      easing: Easing.Power.InOut(),
+      onUpdate: ({ value }) => {
+        target.rotation.set(x - x * value, y - y * value, z - z * value)
+      },
+      onComplete: () => {
+        this.world.cube.reset()
+        this.tweens.reset = null
+      }
+    })
+
+    setTimeout(() => this.activeTransitions--, this.durations.reset)
   }
 
   float(play) {
@@ -195,14 +218,15 @@ export default class UIController {
   stats(visible) {
     this.activeTransitions++
 
+    const stats = this.world.dom.stats
     if (visible === SHOW) {
       this.world.scores.calcStats()
-      this.world.dom.stats.classList.remove(HIDE, NONE)
-      this.world.dom.stats.classList.add(SHOW)
+      stats.classList.remove(HIDE, NONE)
+      stats.classList.add(SHOW)
     } else {
-      this.world.dom.stats.classList.remove(SHOW)
-      this.world.dom.stats.classList.add(HIDE)
-      setTimeout(() => this.world.dom.stats.classList.add(NONE), this.durations.stats)
+      stats.classList.remove(SHOW)
+      stats.classList.add(HIDE)
+      setTimeout(() => stats.classList.add(NONE), this.durations.stats)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.stats)
@@ -211,13 +235,14 @@ export default class UIController {
   preferences(visible) {
     this.activeTransitions++
 
+    const prefs = this.world.dom.prefs
     if (visible === SHOW) {
-      this.world.dom.prefs.classList.remove(HIDE, NONE)
-      this.world.dom.prefs.classList.add(SHOW)
+      prefs.classList.remove(HIDE, NONE)
+      prefs.classList.add(SHOW)
     } else {
-      this.world.dom.prefs.classList.remove(SHOW)
-      this.world.dom.prefs.classList.add(HIDE)
-      setTimeout(() => this.world.dom.prefs.classList.add(NONE), this.durations.preferences)
+      prefs.classList.remove(SHOW)
+      prefs.classList.add(HIDE)
+      setTimeout(() => prefs.classList.add(NONE), this.durations.preferences)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.preferences)
@@ -232,16 +257,19 @@ export default class UIController {
     const note = this.world.dom.texts.note
 
     if (visible === SHOW) {
-      title.classList.remove(HIDE)
-      note.classList.remove(HIDE)
+      title.classList.remove(HIDE, NONE)
+      note.classList.remove(HIDE, NONE)
       title.classList.add(SHOW)
       note.classList.add(SHOW)
     } else {
-      title.classList.remove(SHOW)
       note.style.opacity = window.getComputedStyle(note).opacity
+      title.classList.remove(SHOW)
       note.classList.remove(SHOW)
       title.classList.add(HIDE)
-      note.classList.add(HIDE)
+
+      // transition 过渡动画需要等待 note.style.opacity 赋值在页面中生效
+      setTimeout(() => note.classList.add(HIDE), null)
+      setTimeout(() => { title.classList.add(NONE); note.classList.add(NONE) }, this.durations.title)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.title)

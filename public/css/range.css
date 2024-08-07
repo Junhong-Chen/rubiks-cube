@@ -1,8 +1,3 @@
-#prefs {
-  --handle-color: rgb(49, 132, 155);
-  --handle-color-hover: rgb(65, 170, 200);
-}
-
 .range input {
   appearance: none;
   -webkit-appearance: none;
@@ -21,12 +16,52 @@
   margin: 0;
   border-radius: 0.2em;
   border-bottom: 2px solid rgba(0, 0, 0, 0.2);
-  background: var(--handle-color);
   cursor: pointer;
   outline: none;
-  transition: background .15s ease-in-out;
+  transition: background .2s ease-in-out;
 }
 
-.range input::-webkit-slider-thumb:hover {
-  background: var(--handle-color-hover);
+.range:nth-child(1) input::-webkit-slider-thumb {
+  background: var(--color-red-dark);
+}
+
+.range:nth-child(1) input::-webkit-slider-thumb:hover,
+.range:nth-child(1) input::-webkit-slider-thumb:active {
+  background: var(--color-red);
+}
+
+.range:nth-child(2) input::-webkit-slider-thumb {
+  background: var(--color-yellow-dark);
+}
+
+.range:nth-child(2) input::-webkit-slider-thumb:hover,
+.range:nth-child(2) input::-webkit-slider-thumb:active {
+  background: var(--color-yellow);
+}
+
+.range:nth-child(3) input::-webkit-slider-thumb {
+  background: var(--color-blue-dark);
+}
+
+.range:nth-child(3) input::-webkit-slider-thumb:hover,
+.range:nth-child(3) input::-webkit-slider-thumb:active {
+  background: var(--color-blue);
+}
+
+.range:nth-child(4) input::-webkit-slider-thumb {
+  background: var(--color-green-dark);
+}
+
+.range:nth-child(4) input::-webkit-slider-thumb:hover,
+.range:nth-child(4) input::-webkit-slider-thumb:active {
+  background: var(--color-green);
+}
+
+.range:nth-child(5) input::-webkit-slider-thumb {
+  background: var(--color-orange-dark);
+}
+
+.range:nth-child(5) input::-webkit-slider-thumb:hover,
+.range:nth-child(5) input::-webkit-slider-thumb:active {
+  background: var(--color-orange);
 }

@@ -2,6 +2,7 @@ import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial
 import { Tween, Easing } from "../../utils/tween.js"
 import Draggable from "../../utils/draggable.js"
 import { STATE_TYPE } from "../../utils/store.js"
+import { ROTATION_TYPE } from "../../constants.js"
 
 const STATE = {
   STILL: 0,
@@ -13,17 +14,6 @@ const STATE = {
 const ROTATE_TARGET = {
   LAYER: 'layer',
   CUBE: 'cube'
-}
-
-const ROTATION_TYPE = {
-  FREE: 0,
-  FIXED: 1
-}
-
-const FLIP_TYPE = {
-  SWIFT: 0,
-  SMOOTH: 1,
-  BOUNCE: 2
 }
 
 const material = new MeshBasicMaterial({ visible: false, wireframe: true, side: DoubleSide, transparent: true, depthWrite: false, opacity: 0.5, toneMapped: false })
@@ -133,7 +123,7 @@ export default class Controls {
     // FREE 旋转类型参数
     this.type
     this.acceleration = new Vector3() // 加速度
-    this.rotationSpeed = 0.2 // 速度
+    this.rotationSpeed = 0.25 // 速度
     this.damping = 0.15 // 阻尼
 
     this.cameraDir = this.world.camera.position.clone().normalize()
