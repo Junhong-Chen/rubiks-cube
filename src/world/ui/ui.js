@@ -65,10 +65,15 @@ export default class UIController {
     }
 
     if (show.length) {
-      setTimeout(() => show.forEach(button => {
-        button.classList.add(SHOW)
-        button.classList.remove(HIDE)
-      }), this.durations.button)
+      setTimeout(() => {
+        show.forEach(button => {
+          button.classList.remove(HIDE, NONE)
+          button.classList.add(SHOW)
+        })
+        hide.forEach(button => {
+          button.classList.add(NONE)
+        })
+      }, this.durations.button)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.button)

@@ -25,7 +25,7 @@ const BUTTONS = {
   PLAYING: ['back', 'reset'],
   COMPLETE: [],
   STATS: [],
-  PREFS: ['back'],
+  PREFS: ['back', 'github'],
   THEME: ['back'],
   NONE: [],
 }
@@ -139,9 +139,6 @@ export default class World {
     let tappedTwice = false
 
     this.dom.ui.addEventListener('pointerdown', event => {
-      if (event.buttons.length > 1) {
-        event.preventDefault()
-      }
 
       if (this.ui.activeTransitions > 0) return
       if (this.state === STATE.PLAYING) return
@@ -152,8 +149,8 @@ export default class World {
           tappedTwice = true
           setTimeout(() => tappedTwice = false, 300)
           return false
-
         }
+
         this.game(SHOW)
       } else if (this.state === STATE.COMPLETE) {
         this.complete(HIDE)

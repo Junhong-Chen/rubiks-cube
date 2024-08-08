@@ -126,7 +126,7 @@
 #prefs .range datalist {
   display: flex;
   justify-content: space-between;
-  font-size: 0.6em;
+  font-size: .65em;
   font-weight: bold;
 }
 
@@ -162,13 +162,13 @@
 /* 标题 */
 .text-title span:first-child {
   display: inline-block;
-  outline: 7px solid var(--color-red);
+  outline: 7px solid var(--color-red-dark);
 }
 
 .text-title span:last-child {
   display: inline-block;
   margin-left: 0.4em;
-  outline: 7px solid var(--color-blue);
+  outline: 7px solid var(--color-blue-dark);
 }
 
 .text-title span i {
@@ -180,13 +180,13 @@
 }
 
 .text-title span:first-child i {
-  box-shadow: 0 0 0 0.0828em var(--color-red);
-  outline: 6px solid var(--color-red);
+  box-shadow: 0 0 0 0.0828em var(--color-red-dark);
+  outline: 6px solid var(--color-red-dark);
 }
 
 .text-title span:last-child i {
-  box-shadow: 0 0 0 0.0828em var(--color-blue);
-  outline: 6px solid var(--color-blue);
+  box-shadow: 0 0 0 0.0828em var(--color-blue-dark);
+  outline: 6px solid var(--color-blue-dark);
 }
 
 .text-title.show span,
@@ -304,11 +304,6 @@
 }
 
 /* 按键 */
-.icon {
-  display: inline-block;
-  height: 1.2em;
-}
-
 .btn {
   display: flex;
   justify-content: center;
@@ -322,6 +317,21 @@
   font-size: 1em;
 }
 
+.btn a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.btn icon svg {
+  display: inline-block;
+  height: 1.2em;
+}
+
+.btn-github icon svg {
+  height: 1.35em;
+}
+
 .btn-stats,
 .btn-back {
   bottom: 0;
@@ -330,24 +340,17 @@
 
 .btn-prefs,
 .btn-theme,
-.btn-reset {
+.btn-reset,
+.btn-github {
   bottom: 0;
   right: 0;
 }
 
-.btn-stats.show,
-.btn-back.show,
-.btn-prefs.show,
-.btn-theme.show,
-.btn-reset.show {
+.btn.show {
   pointer-events: auto;
   animation: .5s ease-out forwards fade-in;
 }
 
-.btn-stats.hide,
-.btn-back.hide,
-.btn-prefs.hide,
-.btn-theme.hide,
-.btn-reset.hide {
+.btn.hide {
   animation: .5s ease-in forwards fade-out;
 }

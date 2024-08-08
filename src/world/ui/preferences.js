@@ -35,9 +35,9 @@ document.querySelectorAll('range-slider').forEach(el => {
   input.setAttribute('max', max)
 
   list.forEach((value, i) => {
-    const item = document.createElement('li')
+    const item = document.createElement('li') // safari 不支持 option 标签
     item.setAttribute('value', i)
-    item.setAttribute('label', value)
+    // item.setAttribute('label', value)
     item.textContent = value
 
     item.classList.add(dataType)
@@ -77,8 +77,7 @@ export default class Preferences {
     const scrambleDataList = Array.from(document.body.querySelector('.scramble-data-list').children)
     inputs.size.addEventListener('change', e => {
       const size = CUBE_SIZES[e.target.value]
-      scrambleDataList.forEach((el, i) => el.setAttribute('label', SCRAMBLE_COUNT[size][i])
-      )
+      scrambleDataList.forEach((el, i) => el.textContent = SCRAMBLE_COUNT[size][i])
     })
   }
 }

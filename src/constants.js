@@ -70,7 +70,7 @@ export const CUBE_DIRECTION = ['L', 'R', 'D', 'U', 'B', 'F']
 export const CUBE_SIZES = [2, 3, 4, 5]
 
 export const SCRAMBLE_COUNT = {
-  2: [7, 13, 17],
+  2: [10, 15, 20],
   3: [20, 25, 30],
   4: [30, 40, 50],
   5: [40, 60, 80],

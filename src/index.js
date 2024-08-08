@@ -58,6 +58,7 @@ class App {
         // theme: $('.btn-theme'),
         back: $('.btn-back'),
         reset: $('.btn-reset'),
+        github: $('.btn-github')
       }
     }
 
