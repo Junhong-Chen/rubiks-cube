@@ -1,5 +1,5 @@
 
-import { AdditiveBlending, Uniform, Spherical, Vector2, Vector3, BufferGeometry, RawShaderMaterial, BufferAttribute, Points, Color, Matrix4 } from 'three'
+import { Uniform, Spherical, Vector2, Vector3, BufferGeometry, RawShaderMaterial, BufferAttribute, Points, Color, Matrix4 } from 'three'
 import vertexShader from '../shaders/confetti/vertex.vs.glsl'
 import fragmentShader from '../shaders/confetti/fragment.fs.glsl'
 import { random } from "../utils/utils"
@@ -78,7 +78,6 @@ export default class Confetti {
       transparent: true,
       depthWrite: false,
       depthTest: false,
-      blending: AdditiveBlending,
       uniforms: {
         uSize: new Uniform(size),
         uPixelRatio: new Uniform(pixelRatio),

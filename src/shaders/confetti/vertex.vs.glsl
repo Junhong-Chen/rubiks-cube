@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -57,7 +57,7 @@ void main() {
     float progress = uProgress * aTimeMultiplier / 32.;
 
     // Falling
-    _position.y -= mod(progress * 5., 5.);
+    _position.y -= mod(progress, 1.) * 5.;
 
     // Rotating
     float angle = progress * 3.141592653589793 * 32.0;

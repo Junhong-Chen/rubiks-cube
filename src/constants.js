@@ -71,7 +71,7 @@ export const CUBE_SIZES = [2, 3, 4, 5]
 
 export const SCRAMBLE_COUNT = {
   2: [10, 15, 20],
-  3: [20, 25, 30],
+  3: [20, 1, 30],
   4: [30, 40, 50],
   5: [40, 60, 80],
 }

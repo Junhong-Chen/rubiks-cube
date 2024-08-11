@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 varying mat3 vRotationMatrix;
 varying vec3 vColor;
@@ -10,8 +10,4 @@ void main() {
 
   float alpha = 1.0 - smoothstep(0.3, 0.4, length(rotatedUV.xy));
   gl_FragColor = vec4(vColor, alpha);
-
-  // three.js fragment file
-  // #include <tonemapping_fragment>
-  // #include <colorspace_fragment>
 }
