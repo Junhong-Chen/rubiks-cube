@@ -3,6 +3,7 @@ import babel from 'vite-plugin-babel'
 
 /** @type {import('vite').UserConfig} */
 export default {
+  base: process.env.npm_package_name,
   plugins: [
     glsl(),
     babel({
