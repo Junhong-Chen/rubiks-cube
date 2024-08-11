@@ -1,20 +1,9 @@
-# Setup
+# Rubik's Cube Game
 
-``` bash
-# Install dependencies (only the first time)
-npm install
+This is an interactive Rubik's Cube game built using Three.js. You can rotate the layers and challenge yourself to solve the puzzles just like with a physical Rubik's Cube.
 
-# Run the local server at localhost:5173
-npm run dev
+## Play the Game
 
-# Build for production in the dist/ directory
-npm run build
-```
+You can play the game [here](https://junhong-chen.github.io/rubiks-cube/).
 
-# VSCode Extensions
-
--[GLSL Lint](https://marketplace.visualstudio.com/items?itemName=dtoplak.vscode-glsllint)
-
--[Shader languages support for VS Code](https://marketplace.visualstudio.com/items?itemName=slevesque.shader)
-
--[WebGL GLSL Editor](https://marketplace.visualstudio.com/items?itemName=raczzalan.webgl-glsl-editor)
+Enjoy solving the cubes! 🎉
