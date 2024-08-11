@@ -1,0 +1,369 @@
+@import "common.css";
+@import "animation.css";
+@import "range.css";
+
+#loading-bar {
+  position: absolute;
+  top: calc(50% - 1px);
+  width: 100%;
+  height: 0.125em;
+  background-color: white;
+  transform: scale(0);
+  transform-origin: center left;
+  transition: transform 0.5s;
+  /* 渲染性能优化 */
+  will-change: transform;
+}
+
+#loading-bar.ended {
+  transform-origin: center right;
+  transition: transform 1.5s ease-in-out;
+}
+
+#texts,
+#buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+#stats,
+#prefs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 14em;
+}
+
+/* 统计、设置 */
+#stats.show>div,
+#prefs.show>div {
+  animation: .5s ease-out forwards fade-in;
+}
+
+#stats.show>div:nth-child(2),
+#prefs.show>div:nth-child(2),
+#stats.hide>div:nth-last-child(2),
+#prefs.hide>div:nth-last-child(2) {
+  animation-delay: .1s;
+}
+
+#stats.show>div:nth-child(3),
+#prefs.show>div:nth-child(3),
+#stats.hide>div:nth-last-child(3),
+#prefs.hide>div:nth-last-child(3) {
+  animation-delay: .2s;
+}
+
+#stats.show>div:nth-child(4),
+#prefs.show>div:nth-child(4),
+#stats.hide>div:nth-last-child(4),
+#prefs.hide>div:nth-last-child(4) {
+  animation-delay: .3s;
+}
+
+#stats.show>div:nth-child(5),
+#prefs.show>div:nth-child(5),
+#stats.hide>div:nth-last-child(5),
+#prefs.hide>div:nth-last-child(5) {
+  animation-delay: .4s;
+}
+
+#stats.show>div:nth-child(6),
+#prefs.show>div:nth-child(6),
+#stats.hide>div:nth-last-child(6),
+#prefs.hide>div:nth-last-child(6) {
+  animation-delay: .5s;
+}
+
+#stats.hide>div,
+#prefs.hide>div {
+  animation: .5s ease-in forwards fade-out;
+}
+
+.stats-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-weight: bold;
+  opacity: 0;
+}
+
+.stats-item:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+#prefs .range {
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 3.6em;
+}
+
+#prefs.hide .range,
+#stats.hide .stats-item {
+  opacity: 1;
+}
+
+#prefs .range:not(:last-child) {
+  margin-bottom: 1em;
+}
+
+#prefs .range label {
+  font-size: .9em;
+  font-weight: bold;
+}
+
+#prefs .range datalist {
+  display: flex;
+  justify-content: space-between;
+  font-size: .65em;
+  font-weight: bold;
+}
+
+/* 文本 */
+.text,
+.btn {
+  position: fixed;
+}
+
+.text-title span,
+.text-tick span,
+.text-complete,
+.text-best-time,
+.text-note {
+  opacity: 0;
+}
+
+.text-title,
+.text-tick,
+.text-complete,
+.text-best-time,
+.text-note {
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+/* 标题 */
+.text-title {
+  bottom: 80%;
+  font-size: 2em;
+}
+
+.text-title span:first-child {
+  display: inline-block;
+  outline: 7px solid var(--color-red-dark);
+}
+
+.text-title span:last-child {
+  display: inline-block;
+  margin-left: 0.4em;
+  outline: 7px solid var(--color-blue-dark);
+}
+
+.text-title span i {
+  width: 1.4em;
+  height: 1.4em;
+  text-align: center;
+  border-radius: 0.2em;
+  /* p = (√2 - 1)r; r = 0.2 => p = 0.0828 */
+}
+
+.text-title span:first-child i {
+  box-shadow: 0 0 0 0.0828em var(--color-red-dark);
+  outline: 6px solid var(--color-red-dark);
+}
+
+.text-title span:last-child i {
+  box-shadow: 0 0 0 0.0828em var(--color-blue-dark);
+  outline: 6px solid var(--color-blue-dark);
+}
+
+.text-title.show span,
+.text-tick.show span {
+  animation: .5s ease-out forwards rotate-in;
+}
+
+.text-title.show span:last-child {
+  animation: .5s ease-out .1s forwards rotate-in, .5s ease-in-out .8s forwards crooked;
+}
+
+.text-title.hide span:nth-child(2) {
+  animation-delay: .1s;
+}
+
+.text-title.hide span,
+.text-tick.hide span {
+  opacity: 1;
+  animation: .5s ease-in forwards rotate-out;
+}
+
+.text-best-time {
+  display: flex;
+  align-items: center;
+}
+
+.text-best-time svg {
+  display: inline-block;
+  height: 1.1em;
+  margin-right: .5em;
+}
+
+/* 计时器 */
+
+.text-tick {
+  bottom: 80%;
+  display: flex;
+  justify-content: space-between;
+  width: 5em;
+  font-size: 2.2em;
+}
+
+.text-tick span {
+  position: relative;
+  width: .7em;
+}
+
+.text-tick span:nth-child(2) {
+  animation-delay: .05s;
+}
+
+.text-tick span:nth-child(3) {
+  animation-delay: .1s;
+}
+
+.text-tick span:nth-child(4) {
+  animation-delay: .15s;
+}
+
+.text-tick span:nth-child(5) {
+  animation-delay: .2s;
+}
+
+.text-tick span:nth-child(6) {
+  animation-delay: .25s;
+}
+
+.text-tick span:nth-child(7) {
+  animation-delay: .3s;
+}
+
+.text-tick span:nth-child(8) {
+  animation-delay: .35s;
+}
+
+.text-tick span i {
+  width: 100%;
+  text-align: center;
+}
+
+.text-tick span .above.hide {
+  animation: .5s ease-in forwards up-out;
+}
+
+.text-tick span .below.show {
+  animation: .5s ease-out forwards up-in;
+}
+
+
+.text-tick span i:first-child {
+  position: absolute;
+}
+
+.text-tick .split {
+  width: unset;
+}
+
+.text-tick span .below {
+  opacity: 0;
+  transform: translateY(-1.2em) scale(.5);
+}
+
+/* 提示 */
+.text-complete,
+.text-best-time,
+.text-note {
+  bottom: 8%;
+  font-size: 1.2em;
+  letter-spacing: .2em;
+}
+
+.text-complete.show,
+.text-best-time.show {
+  animation: 3s ease-in-out twinkle;
+}
+
+.text-note {
+  font-size: 1em;
+}
+
+.text-note.show {
+  animation: 3s ease-in-out infinite twinkle;
+}
+
+.text-note.hide {
+  opacity: 0 !important;
+  transition: opacity 0.5s;
+  will-change: opacity;
+}
+
+/* 按键 */
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 3em;
+  height: 3em;
+  opacity: 0;
+  transform: translateY(1.5em);
+  color: #ffffffaa;
+  background-color: transparent;
+  font-size: 1em;
+}
+
+.btn a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.btn icon svg {
+  display: inline-block;
+  height: 1.2em;
+}
+
+.btn-github icon svg {
+  height: 1.35em;
+}
+
+.btn-stats,
+.btn-back {
+  bottom: 0;
+  left: 0;
+}
+
+.btn-prefs,
+.btn-theme,
+.btn-reset,
+.btn-github {
+  bottom: 0;
+  right: 0;
+}
+
+.btn.show {
+  pointer-events: auto;
+  animation: .5s ease-out forwards fade-in;
+}
+
+.btn.hide {
+  animation: .5s ease-in forwards fade-out;
+}
