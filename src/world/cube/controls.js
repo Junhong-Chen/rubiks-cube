@@ -1,4 +1,4 @@
-import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial, PlaneGeometry, DoubleSide, Quaternion, ArrowHelper, AxesHelper, ShaderMaterial, } from "three"
+import { Vector2, Vector3, Matrix4, Mesh, Object3D, Raycaster, MeshBasicMaterial, PlaneGeometry, DoubleSide, Quaternion, ArrowHelper } from "three"
 import { Tween, Easing } from "../../utils/tween.js"
 import Draggable from "../../utils/draggable.js"
 import { STATE_TYPE } from "../../utils/store.js"
@@ -82,9 +82,6 @@ const _tempQuaternion = new Quaternion()
 export default class Controls {
 
   constructor(world) {
-    // this.axes = new AxesHelper()
-    // world.scene.add(this.axes)
-    
     // this.arrow = new ArrowHelper()
     // world.scene.add(this.arrow)
     this.world = world

@@ -14,6 +14,10 @@ export default class Sizes extends EventEmitter {
   get pixelRatio() {
     return this.#pixelRatio
   }
+  
+  get aspect() {
+    return this.#width / this.#height
+  }
 
   constructor() {
     super()

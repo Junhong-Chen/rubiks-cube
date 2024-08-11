@@ -5,7 +5,6 @@ export default class Themes {
   }
 
   constructor() {
-
     this.theme = 'cube'
     this.themes = {
       cube: {
@@ -59,7 +58,6 @@ export default class Themes {
         G: 0x87b9ac,
       },
     }
-
   }
 
   setTheme(theme) {

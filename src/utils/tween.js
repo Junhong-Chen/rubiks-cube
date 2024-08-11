@@ -56,6 +56,10 @@ export const Easing = {
       return t => { return p1 * Math.pow(2, -10 * t) * Math.sin((t - p3) * p2) + 1 }
     },
   },
+
+  Linear: {
+    None: () => t => t
+  },
 }
 
 export class Tween extends Animation {
@@ -64,7 +68,7 @@ export class Tween extends Animation {
     super(false)
 
     this.duration = options.duration || 500
-    this.easing = options.easing || (t => t)
+    this.easing = options.easing || Easing.Linear.None()
     this.onUpdate = options.onUpdate || (() => { })
     this.onComplete = options.onComplete || (() => { })
 

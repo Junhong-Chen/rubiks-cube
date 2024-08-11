@@ -1,10 +1,10 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, MathUtils, PCFSoftShadowMap } from "three"
 import Sizes from "./utils/sizes"
 import Timer from "./utils/timer"
-// import Debugger from "./utils/debugger"
+import Debugger from "./utils/debugger"
 import Store, { STATE_TYPE } from "./utils/store"
 import World from "./world/world"
-// import { isWebGL2Supported } from "./utils/utils"
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const $ = document.querySelector.bind(document)
 
@@ -32,7 +32,7 @@ class App {
   }
 
   init() {
-    // this.debugger = new Debugger()
+    this.debugger = new Debugger()
     this.scene = new Scene()
     this.sizes = new Sizes()
     this.timer = new Timer()
@@ -62,9 +62,9 @@ class App {
       }
     }
 
-    const { width, height } = this.sizes
+    const { width, height, aspect } = this.sizes
 
-    this.camera = new PerspectiveCamera(this.store.state[STATE_TYPE.PREFERENCES].cameraFov, width / height, 0.1, 1000)
+    this.camera = new PerspectiveCamera(this.store.state[STATE_TYPE.PREFERENCES].cameraFov, aspect, 0.1, 1000)
 
 
     this.renderer = new WebGLRenderer({ antialias: true })
@@ -85,25 +85,32 @@ class App {
     this.world = new World(this)
 
     // debugger
+    // this.axes = new AxesHelper()
+    // this.scene.add(this.axes)
+
     // if (this.debugger.gui) {
     //   const guiObj = {
     //     logCamera: () => console.log(this.camera)
     //   }
     //   this.debugger.gui.add(guiObj, 'logCamera')
     // }
+
+    // this.controls = new OrbitControls( this.camera, this.renderer.domElement );
   }
 
   update({ deltaTime }) {
     this.renderer.render(this.scene, this.camera)
 
+    // this.controls.update()
+
     this.world.update(deltaTime)
   }
 
   resize() {
-    const { width, height, pixelRatio } = this.sizes
+    const { width, height, aspect, pixelRatio } = this.sizes
     this.renderer.setSize(width, height)
     this.renderer.setPixelRatio(pixelRatio)
-    this.camera.aspect = width / height
+    this.camera.aspect = aspect
     this.camera.updateProjectionMatrix()
 
     const fovRad = this.camera.fov * MathUtils.DEG2RAD
@@ -114,7 +121,7 @@ class App {
     this.camera.position.set(distance, distance, distance)
     this.camera.lookAt(this.scene.position)
 
-    const docFontSize = stage.aspect < width / height ? height / 100 * stage.aspect : width / 100
+    const docFontSize = stage.aspect < aspect ? height / 100 * stage.aspect : width / 100
     document.documentElement.style.fontSize = docFontSize + 'px'
   }
 

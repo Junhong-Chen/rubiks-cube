@@ -27,6 +27,7 @@ body {
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
+  background: var(--color-black);
 }
 
 h1,
@@ -74,5 +75,4 @@ button {
 
 #canvas {
   display: block;
-  background: var(--color-black);
 }

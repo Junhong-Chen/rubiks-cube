@@ -1,5 +1,6 @@
 import Light from "./light"
 import Floor from "./floor"
+import Confetti from "./confetti"
 import UI from "./ui/ui"
 import Scores from "./ui/scores"
 import Preferences from "./ui/preferences"
@@ -53,6 +54,7 @@ export default class World {
     this.light = new Light(this)
     this.cube = new Cube(this)
     this.floor = new Floor(this)
+    this.confetti = new Confetti(this)
     this.ui = new UI(this)
     this.tick = new Tick(this)
     this.scores = new Scores(this)
@@ -139,7 +141,6 @@ export default class World {
     let tappedTwice = false
 
     this.dom.ui.addEventListener('pointerdown', event => {
-
       if (this.ui.activeTransitions > 0) return
       if (this.state === STATE.PLAYING) return
 
@@ -346,7 +347,7 @@ export default class World {
 
       setTimeout(() => {
         this.ui.complete(SHOW, bestTime)
-        // this.confetti.start()
+        this.confetti.play()
       }, 1000)
     } else {
       this.state = STATE.STATS
@@ -357,7 +358,7 @@ export default class World {
       setTimeout(() => {
         this.cube.reset()
         this.tick.reset()
-        // this.confetti.stop()
+        this.confetti.stop()
 
         this.ui.stats(SHOW)
         this.ui.elevate(STOP)
