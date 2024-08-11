@@ -17,7 +17,7 @@ export default class UIController {
       zoom: 1500,
       reset: 500,
       elevate: 1500,
-      complete: 1500,
+      complete: 1000,
       stats: 1000,
       preferences: 1000,
       button: 500,
@@ -209,12 +209,14 @@ export default class UIController {
 
   complete(visible, best) {
     this.activeTransitions++
-
-    const text = best ? this.world.dom.texts.best : this.world.dom.texts.complete
+    const texts = this.world.dom.texts
 
     if (visible === SHOW) {
+      const text = best ? texts.best : texts.complete
       text.classList.add(SHOW)
-      setTimeout(() => text.classList.remove(SHOW), this.durations.complete * 2)
+    } else {
+      texts.best.classList.remove(SHOW)
+      texts.complete.classList.remove(SHOW)
     }
 
     setTimeout(() => this.activeTransitions--, this.durations.complete)

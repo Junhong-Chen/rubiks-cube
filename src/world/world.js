@@ -337,16 +337,16 @@ export default class World {
         }
       })
 
-      const bestTime = this.scores.addScore(this.tick.deltaTime)
-
       this.ui.zoom(STATE.MENU, 0)
       this.ui.elevate(START)
       this.ui.float(START)
 
+      const bestTime = this.scores.addScore(this.tick.deltaTime)
+      this.ui.complete(SHOW, bestTime)
+
       this.light.switch(Light.SWITCH.TURNOFF, this.ui.durations.zoom)
 
       setTimeout(() => {
-        this.ui.complete(SHOW, bestTime)
         this.confetti.play()
       }, 1000)
     } else {
@@ -354,6 +354,7 @@ export default class World {
 
       this.ui.cube(HIDE)
       this.ui.tick(HIDE)
+      this.ui.complete(HIDE)
 
       setTimeout(() => {
         this.cube.reset()
