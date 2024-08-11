@@ -161,13 +161,13 @@
 
 .text-title span:first-child {
   display: inline-block;
-  outline: 7px solid var(--color-red-dark);
+  outline: .14em solid var(--color-red-dark);
 }
 
 .text-title span:last-child {
   display: inline-block;
   margin-left: 0.4em;
-  outline: 7px solid var(--color-blue-dark);
+  outline: .14em solid var(--color-blue-dark);
 }
 
 .text-title span i {
@@ -180,12 +180,12 @@
 
 .text-title span:first-child i {
   box-shadow: 0 0 0 0.0828em var(--color-red-dark);
-  outline: 6px solid var(--color-red-dark);
+  outline: .12em solid var(--color-red-dark);
 }
 
 .text-title span:last-child i {
   box-shadow: 0 0 0 0.0828em var(--color-blue-dark);
-  outline: 6px solid var(--color-blue-dark);
+  outline: .12em solid var(--color-blue-dark);
 }
 
 .text-title.show span,
