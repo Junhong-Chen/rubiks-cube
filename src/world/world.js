@@ -1,3 +1,4 @@
+import Themes from "./themes"
 import Light from "./light"
 import Floor from "./floor"
 import Confetti from "./confetti"
@@ -5,7 +6,6 @@ import UI from "./ui/ui"
 import Scores from "./ui/scores"
 import Preferences from "./ui/preferences"
 import Cube from './cube/cube'
-import Themes from "./cube/themes"
 import Scrambler from "./cube/scrambler"
 import Controls from "./cube/controls"
 import Tick from "../utils/tick"

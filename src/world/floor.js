@@ -1,5 +1,5 @@
 import { Mesh, MeshStandardMaterial, PlaneGeometry } from "three"
-import lights_fragment_begin from 'three/src/renderers/shaders/ShaderChunk/lights_fragment_begin.glsl.js'
+import lights_fragment_begin from "three/src/renderers/shaders/ShaderChunk/lights_fragment_begin.glsl.js"
 
 export default class Floor {
   constructor(world) {
