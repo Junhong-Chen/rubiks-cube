@@ -13,7 +13,7 @@ uniform bool uFall;
 attribute vec3 position;
 attribute float aTimeMultiplier;
 attribute float aColorRandomness;
- attribute vec3 axis;
+attribute vec3 axis;
 
 varying vec3 vColor;
 varying mat3 vRotationMatrix;
