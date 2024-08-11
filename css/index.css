@@ -156,7 +156,7 @@
 /* 标题 */
 .text-title {
   bottom: 80%;
-  font-size: 2em;
+  font-size: 1.8em;
 }
 
 .text-title span:first-child {
@@ -297,9 +297,15 @@
   letter-spacing: .2em;
 }
 
+.text-complete,
+.text-best-time {
+  transition: opacity 1s;
+  will-change: opacity;
+}
+
 .text-complete.show,
 .text-best-time.show {
-  animation: 3s ease-in-out twinkle;
+  opacity: 1;
 }
 
 .text-note {
