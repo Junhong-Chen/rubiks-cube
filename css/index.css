@@ -173,6 +173,7 @@
 .text-title span i {
   width: 1.4em;
   height: 1.4em;
+  line-height: 1.4em;
   text-align: center;
   border-radius: 0.2em;
   /* p = (√2 - 1)r; r = 0.2 => p = 0.0828 */
@@ -225,7 +226,7 @@
   display: flex;
   justify-content: space-between;
   width: 5em;
-  font-size: 2.2em;
+  font-size: 2em;
 }
 
 .text-tick span {
