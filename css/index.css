@@ -225,13 +225,14 @@
   bottom: 80%;
   display: flex;
   justify-content: space-between;
-  width: 5em;
+  align-items: center;
+  width: 5.6em;
   font-size: 2em;
 }
 
 .text-tick span {
   position: relative;
-  width: .7em;
+  width: .8em;
 }
 
 .text-tick span:nth-child(2) {
