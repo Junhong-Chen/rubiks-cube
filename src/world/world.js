@@ -2,6 +2,7 @@ import Themes from "./themes"
 import Light from "./light"
 import Floor from "./floor"
 import Confetti from "./confetti"
+import Sound from "./sound"
 import UI from "./ui/ui"
 import Scores from "./ui/scores"
 import Preferences from "./ui/preferences"
@@ -55,6 +56,7 @@ export default class World {
     this.cube = new Cube(this)
     this.floor = new Floor(this)
     this.confetti = new Confetti(this)
+    this.sound = new Sound(this)
     this.ui = new UI(this)
     this.tick = new Tick(this)
     this.scores = new Scores(this)
@@ -152,6 +154,7 @@ export default class World {
           return false
         }
 
+        this.sound.enable()
         this.game(SHOW)
       } else if (this.state === STATE.COMPLETE) {
         this.complete(HIDE)
@@ -161,8 +164,11 @@ export default class World {
 
     }, false)
 
-    // 扭动魔方后开始计时
-    this.controls.onLayerMove = () => this.tick.start(true)
+    // 扭动魔方
+    this.controls.onLayerMove = () => {
+      this.tick.start(true)
+      // this.sound.pop()
+    }
 
     // 返回
     this.dom.buttons.back.onclick = () => {
@@ -348,6 +354,7 @@ export default class World {
 
       setTimeout(() => {
         this.confetti.play()
+        this.sound.fanfare()
       }, 1000)
     } else {
       this.state = STATE.STATS

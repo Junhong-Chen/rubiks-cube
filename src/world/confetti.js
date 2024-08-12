@@ -113,16 +113,16 @@ export default class Confetti {
     this.explosion = this.generate({
       type: TYPE.EXPLOSION,
       position: new Vector3(0, -this.boundary.y, 0),
-      count: 200,
-      size: 0.1,
+      count: 150,
+      size: 0.2,
       colors,
       radius,
     })
 
     this.fall = this.generate({
       type: TYPE.FALL,
-      count: 400,
-      size: 0.05,
+      count: 200,
+      size: 0.1,
       colors,
     })
 
