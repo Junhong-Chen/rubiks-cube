@@ -14,6 +14,15 @@
   --color-orange-dark: #bb6f18;
 }
 
+@font-face {
+  font-family: pixel;
+  src: url('/rubiks-cube/fonts/font-pixel.ttf');
+  font-style: normal;
+  font-weight: normal;
+  /* unicode-range: U+0025-00FF; */
+}
+
+
 html,
 body {
   padding: 0;
@@ -28,6 +37,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   background: var(--color-black);
+  font-family: pixel, auto;
 }
 
 h1,
@@ -57,7 +67,6 @@ button {
 }
 
 .number {
-  font-family: sans-serif;
   font-weight: bolder;
 }
 

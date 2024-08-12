@@ -34,6 +34,7 @@ export default class Sound {
   }
 
   fanfare() {
+    this.fanfareSound.currentTime = 0 // 重置
     this.fanfareSound.play()
   }
 }
