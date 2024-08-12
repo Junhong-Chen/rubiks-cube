@@ -2,8 +2,8 @@ export default class Sound {
   #enabled = false
 
   constructor() {
-    this.popSound = new Audio(`${import.meta.env.VITE_BASE_PATH}/sounds/pop.mp3`)
-    this.fanfareSound = new Audio(`${import.meta.env.VITE_BASE_PATH}/sounds/fanfare.mp3`)
+    this.popSound = new Audio(`/${import.meta.env.VITE_BASE_PATH}/sounds/pop.mp3`)
+    this.fanfareSound = new Audio(`/${import.meta.env.VITE_BASE_PATH}/sounds/fanfare.mp3`)
     this.popSound.preload = 'auto' // 预加载
     this.fanfareSound.preload = 'auto'
   }
