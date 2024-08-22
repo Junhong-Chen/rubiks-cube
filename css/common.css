@@ -19,9 +19,7 @@
   src: url('/rubiks-cube/fonts/font-pixel.ttf');
   font-style: normal;
   font-weight: normal;
-  /* unicode-range: U+0025-00FF; */
 }
-
 
 html,
 body {
@@ -30,7 +28,7 @@ body {
   color: var(--color-white);
   font-size: 5em;
   overflow: hidden;
-  touch-action: manipulation; /* 或者 touch-action: none; 根据具体需求选择 */
+  touch-action: manipulation; /* 禁用非标准手势，例如双击缩放 */
   user-select: none;
   -webkit-user-select: none;
   -webkit-user-drag: none;
