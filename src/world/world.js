@@ -154,7 +154,6 @@ export default class World {
           return false
         }
 
-        this.sound.enable()
         this.game(SHOW)
       } else if (this.state === STATE.COMPLETE) {
         this.complete(HIDE)
@@ -232,6 +231,7 @@ export default class World {
 
       setTimeout(() => {
         this.controls.enable()
+        this.sound.enable()
       }, this.ui.durations.zoom)
 
     } else {
